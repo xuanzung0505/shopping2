@@ -1,0 +1,242 @@
+{%extends 'client/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .overlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .wrapper {
+            margin: 25vh auto;
+            padding: 20px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            width: 50%;
+            height: auto;
+            overflow-y:auto;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 1s ease-in-out;
+            max-height: 60%;
+        }
+
+        .wrapper{
+            position: absolute;
+            top: 20px;
+            right: 25vw;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .close{
+            font-size: 30px;
+            transition: all 200ms;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        body {
+            z-index: 0;
+        }
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    {{order|json_script:'order-data'}}
+
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Chi tiết đơn hàng #{{order.id}}</h2>
+                
+                {%if order.active is False%}
+                <h2 style="color: red;">"Đã hủy"</h2>
+                {%endif%}
+
+            </div>
+            <div class="content">
+
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h3 class="title">Sản phẩm</h3>
+                                    </div>
+                                    <!-- <div class="col-6 d-flex justify-content-end">
+                                        <button id="supportbtn" class="btn btn-lg btn-outline-danger"><i class="icon-flag"></i>Khiếu nại</button>
+                                    </div> -->
+                                </div>
+                                
+                            </div>
+                            <hr>
+                            {%for orderitem in orderitemlist%}
+                            <div class="product">
+                                <div class="row justify-content-center align-items-center">
+                                    <div class="col-md-3">
+                                        <div class="product-image"><img class="img-fluid d-block mx-auto image"
+                                                src="{%static orderitem.item.imgPath%}" /></div>
+                                    </div>
+                                    <div class="col-lg-4 product-info"><a class="product-name"
+                                            href="{%url 'shopping:itemdetail' orderitem.item.product.id%}">
+                                            {{orderitem.item.title}}</a>
+                                        <div class="product-specs">
+                                            <div><span>{{orderitem.item.attrValue}}&nbsp;</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 col-lg-2 quantity"><label class="form-label d-none d-md-block"
+                                            for="quantity">số lượng</label><input type="number" id="number"
+                                            class="form-control quantity-input" value="{{orderitem.quantity}}"
+                                            disabled />
+                                    </div>
+                                    <div class="col-9 col-lg-3 price customprice"><span>{{orderitem.totalPrice}}VND</span></div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                            <div class="product">
+                                <div class="row justify-content-center align-items-center">
+                                    <span class="col-6 col-md-6 price">Tổng:</span>
+                                    <span class="col-6 col-md-6 price customprice">
+                                        <span>{{order.totalPrice}}VND</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Thông tin liên hệ</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Hình thức thanh toán</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.purchaseType}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Tên khách hàng</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.clientName}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Tel</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.tel}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Địa chỉ</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.shippingAddress}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Lưu ý</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.detail}}" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Trạng thái đơn hàng</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Trạng thái (0 - đang xử lý, 1 - đã xác nhận, 2 - đang giao hàng, 3 - giao hàng thành công)
+                                            </label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.status}}" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <br>
+                            <a href='#abortOrder' class="btn btn-outline-danger 
+                            btn-lg w-100 {%if order.active is False or order.status == 3%}disabled{%endif%}"> 
+                                <i class="icon-trash"></i>Hủy đơn
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="overlay" id="abortOrder">
+                        <div class="wrapper">
+                            <div class="row">
+                                <div class="col-11">
+                                    <h3 id="abortH3">Bạn thật sự muốn hủy đơn không?</h3>
+                                </div>
+                                <div class="col-1">
+                                    <a class="close" href="#!">&times;</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <a href="#!" class="btn btn-outline-success w-100" id="approveAbort">Có</a>
+                                </div>
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+    <script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'core/assets/js/theme.js'%}"></script>
+    <script src="{%static 'core/js/orderdetail.js'%}"></script>
+{%endblock%}

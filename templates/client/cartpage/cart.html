@@ -1,0 +1,103 @@
+{%extends 'client/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+    <style>
+        .custom-btn {
+            background-color: white;
+            border: 10vw;
+            color: red;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 10%;
+        }
+
+        .custom-btn:hover {
+            background-color: red;
+            color: white;
+            }
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">GIỎ HÀNG</h2>
+                <p>Giỏ hàng của bạn</p>
+            </div>
+            <div class="content">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="items" id="cartItemList">
+                            {%for cartitem in cartitem_set%}
+                            <div class="product" id="cartItem" data-id="{{cartitem.id}}">
+                                <div class="row justify-content-center align-items-center">
+                                    <div class="col-lg-1">
+                                        <input type="checkbox" class="form-check-input" id="check1" name="option1"
+                                            value="something" checked disabled>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="product-image"><img class="img-fluid d-block mx-auto image"
+                                                src='{%static cartitem.item.imgPath%}'></div>
+                                    </div>
+                                    <div class="col-lg-3 product-info"><a class="product-name"
+                                            href="{%url 'shopping:itemdetail' cartitem.item.product.id%}">{{cartitem.item.title}}</a>
+                                        <div class="product-specs">
+                                            <div><span>{{cartitem.item.attrValue}}&nbsp;</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-3 quantity"><label class="form-label d-lg-block d-none"
+                                            for="quantity">Số lượng</label><input type="number" id="quantity" data-id="{{cartitem.id}}" min="1"
+                                            max="{{cartitem.item.quantity}}"
+                                            class="form-control quantity-input" value="{{cartitem.quantity}}"></div>
+                                    <div class="col-lg-3 col-7 price"><span
+                                            id="cartItemTotalPrice" data-id="{{cartitem.id}}">{{cartitem.totalPrice}}VND</span></div>
+                                    <div class="col-lg-1 col-2 ">
+                                        <span>
+                                            <button class="custom-btn" data-id="{{cartitem.id}}"><span aria-hidden="true">&times;</span></button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            {%endfor%}
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="col-md-12">
+                        <form action="{%url 'shopping:checkout'%}" method="get">
+                            {% csrf_token %}
+                            <div class="summary">
+                                <!-- <h3>Tổng cộng</h3> -->
+                                <h1 class="row">
+                                    <span class="col-lg-7 col-6 text" style="text-align: center;">Tổng:</span>
+                                    <span class="col-lg-5 col-6 text" id="cartTotalPrice" style="text-align: left;">{{cart.totalPrice}}VND</span>
+                                </h1>
+                                <br>
+                                <button class="btn btn-primary btn-lg d-block w-100" type="submit"
+                                    name="button-checkout">Thanh toán</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{%static 'core/js/cart.js'%}"></script>
+{%endblock%}

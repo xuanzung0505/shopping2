@@ -1,0 +1,36 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'admin/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'admin/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'admin/assets/css/vanilla-zoom.min.css'%}">
+{%endblock%}
+
+{%block content%}
+<main class="page landing-page">
+    <section class="clean-block clean-hero" style="background-image:url(&quot;assets/img/tech/image4.jpg&quot;);color:rgba(9, 162, 255, 0.85);">
+        <div class="text">
+            <h2>Quản trị hệ thống</h2>
+            <p>Quản lý hệ thống của bạn</p>
+            <div>
+                <a href="{%url 'admin:order'%}" class="btn btn-outline-light btn-lg w-100" type="button">Xem đơn hàng</a>
+            </div>
+            <br>
+            <div>
+                <a href="{%url 'admin:statistics'%}" class="btn btn-outline-light btn-lg w-100" type="button">Xem thống kê</a>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'admin/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'admin/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'admin/assets/js/theme.js'%}"></script>
+{%endblock%}
+

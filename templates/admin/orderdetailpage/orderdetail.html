@@ -1,0 +1,252 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+        /* .custom-btn {
+            background-color: white;
+            border: 10vw;
+            color: red;
+            font-size: 20px;
+            cursor: pointer;
+            border-radius: 10%;
+        }
+
+        .custom-btn:hover {
+            background-color: red;
+            color: white;
+        } */
+        
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+        }
+
+        .overlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .wrapper {
+            margin: 25vh auto;
+            padding: 20px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            width: 50%;
+            position: relative;
+            transition: all 5s ease-in-out;
+        }
+
+        .wrapper .close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+        
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            {{order|json_script:'order-data'}}
+            <div class="block-heading">
+                <h2 class="text-info">Chi tiết đơn hàng #{{order.id}}</h2>
+
+                {%if order.active is False%}
+                <h2 style="color: red;">"Đã hủy"</h2>
+                {%endif%}
+
+            </div>
+            <div class="content">
+
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <h3 class="title">Sản phẩm</h3>
+                                    </div>
+                                    <!-- <div class="col-6 d-flex justify-content-end">
+                                        <button id="supportbtn" class="btn btn-lg btn-outline-danger" disabled>
+                                            <i class="icon-flag"></i>Khiếu nại</button>
+                                    </div> -->
+                                </div>
+                                
+                            </div>
+                            <hr>
+                            {{orderitemlist|json_script:'orderitemlist-data'}}
+                            <div id="orderItemList">
+                            </div>
+                            <hr>
+                            <div class="product">
+                                <div class="row justify-content-center align-items-center">
+                                    <span class="col-6 col-md-6 price">Tổng:</span>
+                                    <span class="col-6 col-md-6 price customprice" id="orderTotalPrice">
+                                        <span>{{order.totalPrice}}VND</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Thông tin liên hệ</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Hình thức thanh toán</label><input type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.purchaseType}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Tên khách hàng</label><input id="hoten" type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.clientName}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Tel</label><input id="dienthoai" type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.tel}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Địa chỉ</label><input id="diachi" type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.shippingAddress}}" disabled />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Lưu ý</label><input id="thongtin" type="text"
+                                                class="form-control" name="description"
+                                                value="{{order.detail}}" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Trạng thái đơn hàng</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="description">Trạng thái (0 - đang xử lý, 1 - đã xác nhận, 2 - đang giao hàng, 3 - giao hàng thành công)
+                                            </label><input type="number"
+                                                class="form-control" name="description"
+                                                value="{{order.status}}" max="3" min='0' id="status" disabled />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items" style="text-align: center;">
+                            <div>
+                                <button class="btn btn-outline-primary btn-lg w-100" id="editbtn" 
+                                {%if order.active is False %}disabled{%endif%}>
+                                    <i class="icon-edit"></i>Chỉnh sửa
+                                </button>
+                            </div>
+                            <br>
+                            <div>
+                                <a class="btn btn-outline-danger
+                                 btn-lg w-100 {%if order.active is False or order.status == 3%}disabled{%endif%}"
+                                id="deletebtn" href="#orderdelete" type="button">
+                                    <i class="icon-trash"></i>Hủy đơn
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overlay" id="orderitemdelete">
+                        <div class="wrapper">
+                            <div class="row">
+                                <div class="col-11">
+                                    <h3>Bạn thật sự muốn xóa hàng không?</h3>
+                                </div>
+                                <div class="col-1">
+                                    <a class="close" href="#!">&times;</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <a href="#!" class="btn btn-outline-success w-100" id="approveItemDelete">Có</a>
+                                </div>
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="overlay" id="orderdelete">
+                        <div class="wrapper">
+                            <div class="row">
+                                <div class="col-11">
+                                    <h3>Bạn thật sự muốn hủy đơn hàng không?</h3>
+                                </div>
+                                <div class="col-1">
+                                    <a class="close" href="#!">&times;</a>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <button class="btn btn-outline-success w-100" id="approveAbortOrder">Có</button>
+                                </div>
+                                <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                    <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+    <script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'core/assets/js/theme.js'%}"></script>
+    <script src="{%static 'admin/js/orderdetail.js'%}"></script>
+{%endblock%}

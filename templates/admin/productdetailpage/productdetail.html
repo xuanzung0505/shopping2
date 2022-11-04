@@ -1,0 +1,578 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'admin/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'admin/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'admin/assets/css/vanilla-zoom.min.css'%}">
+
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+        #rating{border:none;float:left;}
+        #rating>input{display:none;}/*ẩn input radio - vì chúng ta đã có label là GUI*/
+        #rating>label:before{margin:5px;font-size:1.25em;font-family:FontAwesome;display:inline-block;content:"\f005";}/*1 ngôi sao*/
+        #rating>.half:before{content:"\f089";position:absolute;}/*0.5 ngôi sao*/
+        #rating>label{color:#ddd;float:right;}/*float:right để lật ngược các ngôi sao lại đúng theo thứ tự trong thực tế*/
+        /*thêm màu cho sao đã chọn và các ngôi sao phía trước*/
+        #rating>input:checked~label,
+        #rating:not(:checked)>label:hover, 
+        #rating:not(:checked)>label:hover~label{color:#FFD700;}
+        /* Hover vào các sao phía trước ngôi sao đã chọn*/
+        #rating>input:checked+label:hover,
+        #rating>input:checked~label:hover,
+        #rating>label:hover~input:checked~label,
+        #rating>input:checked~label:hover~label{color:#FFED85;}
+    </style>
+
+    <style>
+    /* Make the image fully responsive */
+        .carousel-inner img {
+            width: 90%;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .overlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .wrapper {
+            margin: 25vh auto;
+            padding: 20px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            width: 50%;
+            height: auto;
+            overflow-y:auto;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 1s ease-in-out;
+            max-height: 60%;
+        }
+
+        .wrapper{
+            position: absolute;
+            top: 20px;
+            right: 25vw;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .close{
+            font-size: 30px;
+            transition: all 200ms;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        body {
+            z-index: 0;
+        }
+    </style>
+{%endblock%}
+
+{%block content%}
+    <main class="page product-page">
+        {%csrf_token%}
+        <section class="clean-block clean-product dark">
+            <div class="container">
+                <!-- <div class="block-heading">
+                    <h2 class="text-info">Product Page</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
+                </div> -->
+                <div class="block-content">
+                    <div class="product-info">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="items">
+                                    <div class="card-details">
+                                        <h3 class="title">Thông tin sản phẩm</h3>
+                                        {{item|json_script:'item-data'}}
+                                        <hr>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                        for="title">Tiêu đề</label>
+                                                    <input type="text"
+                                                        class="form-control" name="title" id="title"
+                                                        value="{{item.title}}" disabled/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                        for="unitPrice">Đơn giá</label>
+                                                    <input id="unitPrice" type="number"
+                                                        class="form-control" name="unitPrice"
+                                                        value="{{item.unitPrice}}" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                    for="description">Mô tả</label>
+                                                    <textarea class="form-control" id="description" name="description"
+                                                    style="width: 40vw; height: 25vw; max-width: 100%; max-height: 30%;" disabled>{{item.description}}</textarea>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                        for="quantity">Số lượng</label>
+                                                    <input id="quantity" type="number"
+                                                        class="form-control" name="quantity"
+                                                        value="{{item.quantity}}" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <!-- <label class="form-label"
+                                                        for="category">Danh mục</label>
+                                                    <input id="category" type="text"
+                                                        class="form-control" name="category"
+                                                        value="{{item.category}}" disabled /> -->
+                                                    <div class="form-group">
+                                                        <label class="form-label"
+                                                        for="category">Danh mục</label>
+                                                        <select class="form-control" id="category" disabled>
+                                                            {%for cate in categoryList%}
+                                                                {%if item.category == cate.id%}
+                                                                    <option selected="selected" value="{{cate.id}}">{{cate.id}}-{{cate.title}}</option>
+                                                                {%else%}
+                                                                    <option value="{{cate.id}}">{{cate.id}}-{{cate.title}}</option>
+                                                                {%endif%}
+                                                            {%endfor%}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                        for="imgPath">Link ảnh</label>
+                                                    <input id="imgPath" type="text"
+                                                        class="form-control" name="imgPath"
+                                                        value="{{item.imgPath}}" disabled />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <label class="form-label"
+                                                        for="active">Active</label>
+                                                    <input class="form-check-input" name="active" type="checkbox" value="" 
+                                                    id="active" 
+                                                    {%if item.active %}checked{%endif%} disabled>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button class="btn btn-outline-primary btn-lg w-100" id="editproduct"> 
+                                                    <i class="icon-edit"></i>Chỉnh sửa
+                                                </button>
+                                            </div>
+                                            <div><br></div>
+                                            <div>
+                                                <a class="btn btn-outline-danger btn-lg w-100" id="deleteproduct" href="#itemdelete" type="button">
+                                                    <i class="icon-trash"></i>Xóa
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-info"><br></div>
+                            <div class="col-md-12">
+                                <h3 class="title">Link ảnh cho sản phẩm</h3>
+                                <hr>
+                                <div class="info">
+                                    <div id="imgpathlist">
+                                        {%for img in imgpathlist%}
+                                            <div class="blank" data-id="{{img.id}}">
+                                                <div class="value">
+                                                    <div class="row imgRow" style="margin-bottom: 5px;" data-id="{{img.id}}">
+                                                        <div class="col-md-10 col-12">
+                                                            <input class="form-control imgpath" type="text" 
+                                                        name="value" value="{{img.imgPath}}" data-id="{{img.id}}" disabled>
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <a class="btn btn-outline-primary btn-sm editImgPath" type="button"
+                                                            data-id="{{img.id}}"> 
+                                                                <i class="icon-edit"></i>
+                                                            </a>
+                                                            <a class="btn btn-outline-danger btn-sm deleImgPath" type="button"
+                                                            data-id="{{img.id}}" href="#imgPathDelete"> 
+                                                                <i class="icon-trash"></i>
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- <br data-id="{{attr.id}}" data-index="{{attr.index}}"> -->
+                                        {%endfor%}
+                                    </div>
+                                    <br>
+                                    <div class="row" id="addImgPathSection">
+                                        <div class="col-12">
+                                            <a class="btn btn-outline-primary w-100 btn-lg" href="#imgPathAdd"> 
+                                                <i class="icon-plus-sign"></i>Thêm link ảnh
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overlay" id="imgPathAdd">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-10">
+                                            <h3 id="ImgAddH3">Thêm link ảnh</h3>
+                                        </div>
+                                        <div class="col-2" style="text-align: center;">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <div class="mb-3">
+                                                <h5>Link ảnh</h5>
+                                                <input type="text"
+                                                    class="form-control" name="imgPath"
+                                                    value="{{item.imgPath}}" id="imgAddField"/>
+                                            </div>
+                                        </div>
+                                        <div><br></div>
+                                        <div>
+                                            <div class="mb-3">
+                                                <button class="btn btn-outline-primary btn-lg w-100" id="approveImgAdd"> 
+                                                    <i class="icon-check"></i>Thêm
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <a href="#!" class="btn btn-lg btn-outline-danger w-100" type="button">
+                                                    Hủy bỏ</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="overlay" id="imgPathDelete">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <h3 id="imgPathDeleteH3">Bạn thật sự muốn xóa link ảnh không?</h3>
+                                        </div>
+                                        <div class="col-1">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div id="imgPathDeleteContent" style="font-weight: lighter; word-wrap: break-word;
+                                        font-size: medium;"></div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-success w-100" id="approveImgPathDelete">Có</a>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="product-info"><br></div>
+                            <div class="col-md-12">
+                                <h3 class="title">Đặc tính sản phẩm</h3>
+                                <hr>
+                                <div class="info">
+                                    <div id="attributelist">
+                                        {%for attr in attrlist%}
+                                            <div class="blank" data-id="{{attr.id}}" data-index="{{attr.index}}">
+                                                <label for="Attrtitle">Tên đặc tính #{{attr.index}}</label>
+                                                <div class="row" style="margin-bottom: 10px;">
+                                                    <div class="col-md-10 col-12">
+                                                        <input type="text"
+                                                        class="form-control Attrtitle" name="Attrtitle"
+                                                        value="{{attr.title}}" data-id="{{attr.id}}" disabled />
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <a class="btn btn-outline-primary btn-sm editAttrTitle" type="button"
+                                                        data-id="{{attr.id}}" data-index=""> 
+                                                            <i class="icon-edit"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <label for="value">Giá trị tương ứng</label>
+                                                <div class="value">
+                                                    <div class="valueList" data-id="{{attr.id}}">
+                                                        {%for value in attr.value%}
+                                                        <div class="row attrValueRow" style="margin-bottom: 5px;" data-index="{{value.index}}"
+                                                        data-id="{{value.pk}}">
+                                                            <div class="col-md-10 col-12">
+                                                                <input class="form-control Attrvalue" type="text" 
+                                                            name="value" value="{{value}}" data-id="{{value.pk}}" data-index="{{value.index}}"
+                                                            data-attr="{{attr.id}}" disabled>
+                                                            </div>
+                                                            <div class="col-md-2">
+                                                                <a class="btn btn-outline-primary btn-sm editAttrValue" type="button"
+                                                                data-id="{{value.pk}}"> 
+                                                                    <i class="icon-edit"></i>
+                                                                </a>
+                                                                <a class="btn btn-outline-danger btn-sm deleAttrValue" type="button"
+                                                                data-id="{{value.pk}}" href="#attrValueDelete"> 
+                                                                    <i class="icon-trash"></i>
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                        {%endfor%}
+                                                    </div>
+                                                    <div class="row addAttrValueSection" data-id="{{attr.id}}">
+                                                        <div class="col-md-10">
+                                                            <button class="btn btn-outline-primary w-100 btn-sm addAttrValue"
+                                                            data-id="{{attr.id}}"> 
+                                                                <i class="icon-plus-sign"></i>Thêm giá trị
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="col-12">
+                                                        <a class="btn btn-outline-danger w-100 btn-lg deleAttr"
+                                                        data-id="{{attr.id}}" href="#attrDelete"> 
+                                                            <i class="icon-trash"></i>Xóa đặc tính #{{attr.index}}
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <br data-id="{{attr.id}}" data-index="{{attr.index}}">
+                                        {%endfor%}
+                                    </div>
+                                    <div class="row" id="addAttrSection">
+                                        <div class="col-12">
+                                            <button class="btn btn-outline-primary btn-lg w-100" id="addAttr"
+                                            data-id="{{item.id}}"> 
+                                                <i class="icon-plus-sign"></i>Thêm đặc tính
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="overlay" id="attrValueDelete">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <h3 id="attrValueDeleteH3">Bạn thật sự muốn xóa attrval không?</h3>
+                                        </div>
+                                        <div class="col-1">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-success w-100" id="approveAttrValueDelete">Có</a>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="overlay" id="attrDelete">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <h3 id="attrDeleteH3">Bạn thật sự muốn xóa attr không?</h3>
+                                        </div>
+                                        <div class="col-1">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-success w-100" id="approveAttrDelete">Có</a>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="product-info"><br></div>
+                            <div class="col-md-12">
+                                <h3 class="title">Biến thể sản phẩm</h3>
+                                <hr>
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-3 product-info">
+                                            <h4 style="font-weight: bold;">#Biến thể</h4>
+                                        </div>
+                                        <div class="col-2 product-info quantity d-flex justify-content-center">
+                                            <h4 style="font-weight: bold;">Active</h4>
+                                        </div>
+                                        <div class="col-3 product-info quantity d-flex justify-content-center">
+                                            <h4 style="font-weight: bold;">Số lượng</h4>
+                                        </div>
+                                        <div class="col-4 product-info price customprice d-flex justify-content-end">
+                                            <h4 style="font-weight: bold;" >Đơn giá</h4>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{varianceList|json_script:'varianceList-data'}}
+                                <div id="variancelist">
+                                </div>
+
+                                <!-- <div class="variance"></div> -->
+
+                                <div>
+                                    <a class="btn btn-outline-primary btn-lg w-100" id="addVariance" href="#varianceAdd"> 
+                                        <i class="icon-plus-sign"></i>Thêm biến thể
+                                    </a>
+                                </div>
+                                <div class="overlay" id="varianceAdd">
+                                    <div class="wrapper">
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <h3 id="varianceAddH3">Thêm biến thể</h3>
+                                            </div>
+                                            <div class="col-2" style="text-align: center;">
+                                                <a class="close" href="#!">&times;</a>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Tiêu đề</h5>
+                                                    <input type="text"
+                                                        class="form-control variance" name="title"
+                                                        value="{{item.title}}" disabled/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Đơn giá</h5>
+                                                    <input type="number"
+                                                        class="form-control variance" name="unitPrice"
+                                                        value="{{item.unitPrice}}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Số lượng</h5>
+                                                    <input type="number"
+                                                        class="form-control variance" name="quantity"
+                                                        value="{{item.quantity}}" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Link ảnh</h5>
+                                                    <input type="text"
+                                                        class="form-control variance" name="imgPath"
+                                                        value="{{item.imgPath}}" disabled/>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Thuộc tính và giá trị(thuộc tính #0:giá trị,thuộc tính #1:giá trị,...)</h5>
+                                                    <input type="text"
+                                                        class="form-control variance" name="attrValue"
+                                                        value="" />
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-12">
+                                                <div class="mb-3">
+                                                    <h5>Active</h5>
+                                                    <input class="form-check-input variance" name="active" type="checkbox" value=""
+                                                    {%if item.active %}checked{%endif%}>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <button class="btn btn-outline-primary btn-lg w-100" id="editvariance"> 
+                                                    <i class="icon-edit"></i>Chỉnh sửa
+                                                </button>
+                                            </div>
+                                            <div>
+                                                <a class="btn btn-outline-danger btn-lg w-100" id="deletevariance" href="#variancedelete" 
+                                                type="button" style="display: none;">
+                                                    <i class="icon-trash"></i>Xóa biến thể
+                                                </a>
+                                            </div>
+                                            <div><br></div>
+                                            <div>
+                                                <a href="#!" class="btn btn-lg btn-outline-danger w-100" type="button">
+                                                    Hủy bỏ</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="overlay" id="variancedelete">
+                                    <div class="wrapper">
+                                        <div class="row">
+                                            <div class="col-11">
+                                                <h3 id="varianceDeleteH3">Bạn thật sự muốn xóa biến thể #0 không?</h3>
+                                            </div>
+                                            <div class="col-1">
+                                                <a class="close" href="#!">&times;</a>
+                                            </div>
+                                        </div>
+            
+                                        <div class="row">
+                                            <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                                <a href="#!" class="btn btn-outline-success w-100" id="approveVarianceDelete">Có</a>
+                                            </div>
+                                            <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                                <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{%endblock%}
+
+{%include 'admin/footer.html'%}
+
+{%block jsblock%}
+    <script src="{%static 'admin/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'admin/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'admin/assets/js/theme.js'%}"></script>
+    <script src="{%static 'admin/js/productdetail.js'%}"></script>
+{%endblock%}

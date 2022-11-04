@@ -1,0 +1,40 @@
+{%extends 'client/base1.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+{%endblock%}
+
+{%block content%}
+    <div class="page login-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Đăng nhập</h2>
+                </div>
+                <div>
+                    <form id="signin">
+                        {% csrf_token %}
+                        <div class="mb-3"><label class="form-label" for="username">Tài khoản</label><input id='username' class="form-control item" type="text" name="username" required></div>
+                        <div class="mb-3"><label class="form-label" for="password">Mật khẩu</label><input id='password' class="form-control" type="password" name="password" required></div>
+                        <div class="mb-3"></div><button class="btn btn-outline-primary" type="submit">Xác nhận</button>
+                        <div class="mb-3"></div>chưa có tài khoản?<a href="/register">đăng ký</a>
+                    </form>
+                </div>
+                
+            </div>
+        </section>
+    </div>
+{%endblock%}
+
+{%block jsblock%}
+    <script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'core/assets/js/theme.js'%}"></script>
+    <script src="{%static 'core/js/login.js'%}"></script>
+{%endblock%}

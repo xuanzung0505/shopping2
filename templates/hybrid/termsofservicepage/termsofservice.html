@@ -1,0 +1,137 @@
+{%extends 'hybrid/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+<link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+<link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+<link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+    @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+</style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Điều khoản dịch vụ</h2>
+            </div>
+            <div class="content">
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-12 price" style="text-align: left;">
+                                            <span>Trách nhiệm của chúng tôi</span>
+                                        </div>
+                                        <div>
+                                            <br>
+                                            <p>- Chúng tôi cung cấp nhiều dịch vụ chịu sự điều chỉnh của các điều khoản này, bao gồm:</p>
+                                            <ul>
+                                                <li>Quản lý việc mua bán sản phẩm</li>
+                                                <li>Quản lý khách hàng</li>
+                                                <li>Quản lý cửa hàng</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-12 price" style="text-align: left;">
+                                            <span>Trách nhiệm của bạn</span>
+                                        </div>
+                                        <div>
+                                            <br>
+                                            <p>- Tuân thủ các điều khoản này và các điều khoản bổ sung dành riêng cho từng dịch vụ</p>
+                                            <p>- Quyền mà chúng tôi đã cấp cho bạn để sử dụng các dịch vụ của chúng tôi sẽ tiếp tục có hiệu
+                                                 lực miễn là bạn tuân thủ:</p>
+                                            <ul>
+                                                <li>các điều khoản này</li>
+                                                <li>các điều khoản bổ sung dành riêng cho từng dịch vụ</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-12 price" style="text-align: left;">
+                                            <span>Tôn trọng người khác</span>
+                                        </div>
+                                        <div>
+                                            <br>
+                                            <p>- Chúng tôi muốn duy trì một môi trường mà trong đó mọi người đều tôn trọng lẫn nhau, vì vậy, 
+                                                bạn phải tuân theo các quy tắc ứng xử cơ bản sau đây:</p>
+                                            <p>- Quyền mà chúng tôi đã cấp cho bạn để sử dụng các dịch vụ của chúng tôi sẽ tiếp tục có hiệu
+                                                 lực miễn là bạn tuân thủ:</p>
+                                            <ul>
+                                                <li>tuân thủ các luật hiện hành, bao gồm cả luật kiểm soát xuất khẩu, luật trừng phạt, và 
+                                                    luật phòng chống buôn người</li>
+                                                <li>tôn trọng các quyền của người khác, bao gồm cả quyền riêng tư và quyền sở hữu trí tuệ</li>
+                                                <li>không đối xử tệ bạc hoặc gây hại cho người khác hay chính bản thân bạn (hoặc đe dọa 
+                                                    hay khuyến khích thực hiện hành vi đối xử tệ bạc hoặc gây hại đó) — chẳng hạn như bằng 
+                                                    cách đưa thông tin sai lệch, lừa đảo, mạo danh bất hợp pháp, phỉ báng, bắt nạt, quấy rối 
+                                                    hoặc đeo bám người khác</li>
+                                                <li>không sử dụng sai cách, gây hại, can thiệp hoặc làm gián đoạn các dịch vụ — chẳng hạn như 
+                                                    bằng cách truy cập hoặc sử dụng chúng theo các cách gian lận hoặc lừa đảo, phát tán phần 
+                                                    mềm độc hại hoặc gửi thư rác, xâm nhập trái phép hoặc vượt qua các hệ thống hoặc biện pháp 
+                                                    bảo vệ của chúng tôi. Khi chúng tôi lập chỉ mục trang web để hiện cho bạn kết quả tìm kiếm, 
+                                                    chúng tôi tuân thủ hạn chế tiêu chuẩn liên quan đến hoạt động sử dụng mà chủ sở hữu trang 
+                                                    web quy định trong quy tắc của trang web, nên chúng tôi cũng yêu cầu như vậy khi người khác 
+                                                    sử dụng dịch vụ của chúng tôi</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-12 price" style="text-align: left;">
+                                            <span>Quyền sử dụng nội dung của bạn</span>
+                                        </div>
+                                        <div>
+                                            <br>
+                                            <p>- Một số dịch vụ của chúng tôi được thiết kế để bạn có thể tải lên, nộp, lưu trữ, gửi, nhận, 
+                                                chia sẻ hoặc tải nội dung của bạn lên. Bạn không có nghĩa vụ cung cấp bất kỳ nội dung nào của
+                                                 bạn cho các dịch vụ của chúng tôi và bạn có thể chọn nội dung bạn muốn cung cấp. Nếu bạn chọn
+                                                  chia sẻ hoặc tải nội dung lên, vui lòng đảm bảo rằng bạn có các quyền cần thiết để làm điều đó 
+                                                  và rằng nội dung đó là nội dung hợp pháp.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- <nav class="d-flex justify-content-center">
+                            <ul class="pagination" id="pagi">
+                                <li class="page-item disabled" id="pagiItem" name="prev"><a class="page-link" href="#"
+                                        aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active" id="pagiItem" value="1"><a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item" id="pagiItem" value="2"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item" id="pagiItem" value="3"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item" id="pagiItem" name="next"><a class="page-link" href="#"
+                                        aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+{%endblock%}

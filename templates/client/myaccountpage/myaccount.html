@@ -1,0 +1,273 @@
+{%extends 'client/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"> -->
+    
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        
+    @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+    /* Make the image fully responsive */
+        .carousel-inner img {
+            width: 90%;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.8);
+            transition: opacity 500ms;
+            visibility: hidden;
+            opacity: 0;
+            z-index: 1;
+        }
+
+        .overlay:target {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .wrapper {
+            margin: 25vh auto;
+            padding: 20px;
+            background: #e7e7e7;
+            border-radius: 5px;
+            width: 50%;
+            height: auto;
+            overflow-y:auto;
+            overflow-x: hidden;
+            position: relative;
+            transition: all 1s ease-in-out;
+            max-height: 60%;
+        }
+
+        .wrapper{
+            position: absolute;
+            top: 20px;
+            right: 25vw;
+            transition: all 200ms;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .close{
+            font-size: 30px;
+            transition: all 200ms;
+            font-weight: bold;
+            text-decoration: none;
+            color: #333;
+        }
+
+        body {
+            z-index: 0;
+        }
+        
+        .required-field::after {
+            content: "*";
+            color: red;
+        }
+    </style>
+{%endblock%}
+
+{%block content%}
+    <main class="page product-page">
+        {%csrf_token%}
+        <section class="clean-block clean-product dark">
+            <div class="container">
+                <!-- <div class="block-heading">
+                    <h2 class="text-info">Product Page</h2>
+                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc quam urna, dignissim nec auctor in, mattis vitae leo.</p>
+                </div> -->
+                <div class="block-content">
+                    <div class="product-info">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="items">
+                                    <div class="card-details">
+                                        <h3 class="title">Tài khoản của tôi</h3>
+                                        {{user|json_script:'user-data'}}
+                                        <hr>
+                                        <form id="userForm" action="post">
+                                            <div class="row">
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="username">Tên tài khoản</label>
+                                                        <input type="text"
+                                                            class="form-control" name="username" id="username"
+                                                            value="{{user.username}}" disabled/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="firstname">Tên</label>
+                                                        <input type="text"
+                                                            class="form-control" name="firstname" id="firstname"
+                                                            value="{{user.first_name}}" disabled/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="lastname">Tên họ</label>
+                                                        <input type="text"
+                                                            class="form-control" name="lastname" id="lastname"
+                                                            value="{{user.last_name}}" disabled/>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="email">Địa chỉ email</label>
+                                                        <input id="email" type="email"
+                                                            class="form-control" name="email"
+                                                            value="{{user.myuser.email}}" disabled />
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3"><label class="form-label" for="password">Số điện thoại</label>
+                                                        <div><input class='form-control' type="text" name="tel" id="tel" 
+                                                            value='{{user.myuser.tel}}' maxlength="12" minlength="6" disabled></div>
+                                                </div>
+                                                <!-- <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="active">Trạng thái</label>
+                                                        <input class="form-check-input" name="active" type="checkbox" value="" 
+                                                        id="active" 
+                                                        {%if user.is_active %}checked{%endif%} disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="staff">Nhân viên</label>
+                                                        <input class="form-check-input" name="staff" type="checkbox" value="" 
+                                                        id="staff" 
+                                                        {%if user.is_staff %}checked{%endif%} disabled>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-12">
+                                                    <div class="mb-3">
+                                                        <label class="form-label"
+                                                            for="superuser">Quản lý</label>
+                                                        <input class="form-check-input" name="superuser" type="checkbox" value="" 
+                                                        id="superuser" 
+                                                        {%if user.is_superuser %}checked{%endif%} disabled>
+                                                    </div>
+                                                </div> -->
+                                                <div><br></div>
+                                                <div>
+                                                    <button class="btn btn-outline-primary btn-lg w-100" id="edituser" type="submit"> 
+                                                        <i class="icon-edit"></i>Chỉnh sửa thông tin
+                                                    </button>
+                                                </div>
+                                                <div><br></div>
+
+                                                <div class="product-info"><br></div>
+                                        </form>
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="items">
+                                                <div class="card-details">
+                                                    <h3 class="title">Đổi mật khẩu</h3>
+                                                </div>
+                                            </div>
+                                            <hr>
+                                            <form action="post" id="editPass">
+                                                <div class="mb-3"><label class="form-label required-field" for="password">Mật khẩu</label>
+                                                    <div><input type="password" name="password1" class="form-control" required 
+                                                        id="password1" placeholder="mật khẩu" maxlength="22" minlength="8"></div>
+                                                </div>
+                                                    <div class="mb-3"><label class="form-label required-field" for="password">Xác thực mật khẩu</label>
+                                                    <div><input type="password" name="password2" class="form-control" required
+                                                        id="password2" placeholder="xác thực mật khẩu" maxlength="22" minlength="8"></div>
+                                                </div>
+                                                <button class="btn btn-outline-primary btn-lg w-100" type="submit"> 
+                                                    <i class="icon-lock"></i>Xác nhận
+                                                </button>
+                                            </form>
+                                            <br>
+                                            <label class="form-label required-field">Lưu ý</label>: Bạn sẽ phải đăng nhập lại sau khi đổi mật khẩu thành công
+                                        </div>
+
+                                        <div class="product-info"><br></div>
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="items">
+                                                <div class="card-details">
+                                                    <h3 class="title">Vô hiệu hóa tài khoản</h3>
+                                                </div>
+                                            </div>
+                                            <hr>
+
+                                            <p>Bạn có thể vô hiệu hóa tài khoản của mình</p>
+                                            <form action="post" id="editPass">
+                                                
+                                                <div><br></div>
+                                                <div>
+                                                    <a class="btn btn-outline-danger btn-lg w-100" href="#userdeactivate" type="button">
+                                                        <i class="icon-trash"></i>Vô hiệu hóa tài khoản
+                                                    </a>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br>
+                            
+                            <div class="overlay" id="userdeactivate">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <h3 id="attrDeleteH3">Bạn thật sự muốn vô hiệu hóa tài khoản không? 
+                                                (liên hệ quản trị để kích hoạt lại)</h3>
+                                        </div>
+                                        <div class="col-1">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+        
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-success w-100" id="approveDeactivate">Có</a>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+{%endblock%}
+
+{%include 'client/footer.html'%}
+
+{%block jsblock%}
+    <script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'core/assets/js/theme.js'%}"></script>
+    <script src="{%static 'core/js/myaccount.js'%}"></script>
+{%endblock%}

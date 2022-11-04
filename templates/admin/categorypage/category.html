@@ -1,0 +1,79 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'admin/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'admin/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'admin/assets/css/vanilla-zoom.min.css'%}">
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Danh mục</h2>
+                <p>Danh sách tất cả danh mục</p>
+                <br>
+                <button type="button" class="btn btn-lg btn-primary" id="addCategory"><i class="icon-plus-sign"></i>Thêm danh mục</button>
+            </div>
+            <div class="content">
+                    <div class="row g-0">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <div class="card-details">
+                                    <h3 class="title">Danh mục sản phẩm</h3>
+                                </div>
+                                <p id="dataQuantity">đang hiển thị {{categoryList.count}} danh mục</p>
+                                <hr>
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-8 price" style="text-align: center;">
+                                            <span>Tiêu đề</span>
+                                        </div>
+                                        <!-- <div class="col-3 price" style="text-align: center;"><span>Nhân viên</span></div>
+                                        <div class="col-3 price" style="text-align: center;"><span>Quản lý</span></div> -->
+                                        <div class="col-4 price" style="text-align: center;">
+                                            <span>Trạng thái</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                {%for category in categoryList%}
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-8 product-info" style="text-align: center;">
+                                            <a class="product-name" href="{%url 'admin:categorydetail' category.id%}"
+                                            >{{category.title}}</a>
+                                        </div>
+                                        <div class="col-4 quantity">
+                                            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" 
+                                            {%if category.active %}checked{%endif%} disabled>
+                                        </div>
+                                    </div>
+                                </div>
+                                {%endfor%}
+                            </div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+    <script src="{%static 'admin/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'admin/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'admin/assets/js/theme.js'%}"></script>
+    <script src="{%static 'admin/js/category.js'%}"></script>
+{%endblock%}

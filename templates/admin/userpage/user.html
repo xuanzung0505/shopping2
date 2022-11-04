@@ -1,0 +1,146 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+<link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+<link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+<link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+    @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+</style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Người dùng</h2>
+                <p>Danh sách tất cả người dùng</p>
+            </div>
+            <div class="content">
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Người dùng hệ thống</h3>
+                                <hr>
+                                <label class="form-label" for="userId">
+                                    Lọc theo mã:
+                                </label>
+                                <input class="form-control" type="text" name="userId" id="userId">
+                                <br>
+                                <label class="form-label" for="username">
+                                    Lọc theo tên người dùng:
+                                </label>
+                                <input class="form-control" type="text" name="username" id="username">
+                                <br>
+                                <label class="form-label" for="email">
+                                    Lọc theo email:
+                                </label>
+                                <input class="form-control" type="text" name="email" id="email">
+                                <br>
+                                <label class="form-label" for="checkboxFilter">Lọc theo quyền:</label>
+                                <div class="row">
+                                    <div class="col-3">
+                                        <label class="form-label" for="active">Tất cả</label>
+                                        <input class="form-check-input" type="radio" name="authorization" value="all"
+                                            checked>
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label" for="active">Khách hàng</label>
+                                        <input class="form-check-input" type="radio" name="authorization" value="client">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label" for="staff">Nhân viên</label>
+                                        <input class="form-check-input" type="radio" name="authorization" value="staff">
+                                    </div>
+                                    <div class="col-3">
+                                        <label class="form-label" for="superuser">Quản lý</label>
+                                        <input class="form-check-input" type="radio" name="authorization" value="superuser">
+                                    </div>
+                                </div>
+                                <br>
+                                <label class="form-label" for="checkboxFilter">Lọc theo trạng thái:</label>    
+                                <input class="form-check-input" name="active" type="checkbox"
+                                id="active" checked>
+                                <div><br></div>
+                                <label class="form-label" for="orderfield">Sắp xếp theo:</label>
+                                <select class="form-control" id="orderfield">
+                                    <option selected="selected" value="id">mã</option>
+                                    <option value="username">tên người dùng</option>
+                                    <option value="email">email</option>
+                                    <option value="date_joined">ngày tạo</option>
+                                </select>
+                                <br>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="orderType" id="orderAscending"
+                                        checked value="ascending">
+                                    <label class="form-check-label" for="orderType">
+                                        tăng dần
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="orderType" id="orderDescending"
+                                        value="descending">
+                                    <label class="form-check-label" for="orderType">
+                                        giảm dần
+                                    </label>
+                                </div>
+                                <br>
+                                <button class="btn btn-lg btn-outline-primary w-100" id="filterButton">
+                                    <i class="icon-filter"></i>Lọc kết quả</button>
+                            </div>
+                            <br>
+                            <p id="dataQuantity">đang hiển thị ? người dùng</p>
+                            <hr>
+                            <div class="product">
+                                <div class="row">
+                                    <div class="col-4 price" style="text-align: left;">
+                                        <span>Người dùng</span>
+                                    </div>
+                                    <div class="col-3 price" style="text-align: center;"><span>Nhân viên</span></div>
+                                    <div class="col-3 price" style="text-align: center;"><span>Quản lý</span></div>
+                                    <div class="col-2 price" style="text-align: center;">
+                                        <span>Trạng thái</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {{userList|json_script:'userList-data'}}
+                            <div id="userList">
+                            </div>
+                        </div>
+
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination" id="pagi">
+                                <li class="page-item disabled" id="pagiItem" name="prev"><a class="page-link" href="#"
+                                        aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active" id="pagiItem" value="1"><a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item" id="pagiItem" value="2"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item" id="pagiItem" value="3"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item" id="pagiItem" name="next"><a class="page-link" href="#"
+                                        aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+<script src="{%static 'admin/js/user.js'%}"></script>
+{%endblock%}

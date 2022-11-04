@@ -1,0 +1,132 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+<link rel="stylesheet" href="{%static 'admin/assets/bootstrap/css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+<link rel="stylesheet" href="{%static 'admin/assets/fonts/simple-line-icons.min.css'%}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+<link rel="stylesheet" href="{%static 'admin/assets/css/vanilla-zoom.min.css'%}">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+    @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+</style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Thống kê</h2>
+                <p>Thống kê, số liệu cửa hàng</p>
+            </div>
+            <div class="content">
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Thống kê doanh thu</h3>
+                                <hr>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Số đơn hàng giao thành công:</span>
+                                        </div>
+                                        <div class="col-5 price"><span>{{successfulorderlist.count}}</span></div>
+                                    </div>
+                                </div>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Tổng doanh thu:</span>
+                                        </div>
+                                        {{totalprice|json_script:'totalPrice-data'}}
+                                        <div class="col-5 price"><span id="totalPrice">{{totalprice}}VND</span></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="product"><br></div>
+                            <div class="card-details">
+                                <h3 class="title">Thống kê tài khoản</h3>
+                                <hr>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Tài khoản thanh toán nhiều nhất:</span>
+                                        </div>
+                                        <div class="col-5 price"><span><a href="/admin/user/{{client.id}}">{{client.username}}</a></span></div>
+                                    </div>
+                                </div>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Tổng giá trị thanh toán:</span>
+                                        </div>
+                                        {{clienttotalprice|json_script:'clienttotalPrice-data'}}
+                                        <div class="col-5 price"><span id="clientTotalPrice">{{clienttotalprice}}</span></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="product"><br></div>
+                            <div class="card-details">
+                                <h3 class="title">Thống kê sản phẩm</h3>
+                                <hr>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Sản phẩm được mua nhiều nhất:</span>
+                                        </div>
+                                        <div class="col-5 price"><span><a href="/admin/product/{{product.id}}">{{product.title}}</a></span></div>
+                                    </div>
+                                </div>
+
+                                <div class="product">
+                                    <div class="row">
+                                        <div class="col-6 price" style="text-align: left;">
+                                            <span>Số lượt mua:</span>
+                                        </div>
+                                        <div class="col-5 price"><span id="productQuantity">{{productquantity}}</span></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <!-- <nav class="d-flex justify-content-center">
+                            <ul class="pagination" id="pagi">
+                                <li class="page-item disabled" id="pagiItem" name="prev"><a class="page-link" href="#"
+                                        aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active" id="pagiItem" value="1"><a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item" id="pagiItem" value="2"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item" id="pagiItem" value="3"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item" id="pagiItem" name="next"><a class="page-link" href="#"
+                                        aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav> -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'admin/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'admin/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'admin/assets/js/theme.js'%}"></script>
+<script src="{%static 'admin/js/statistics.js'%}"></script>
+{%endblock%}

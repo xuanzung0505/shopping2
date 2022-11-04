@@ -1,0 +1,19 @@
+{%load static%}
+
+<nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+    <div class="container"><a class="navbar-brand logo" href="{%url 'admin:index'%}">Shopping</a><button data-bs-toggle="collapse" class="navbar-toggler" data-bs-target="#navcol-1"><span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+        <div class="collapse navbar-collapse" id="navcol-1">
+            <ul class="navbar-nav ms-auto">
+                
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:index'%}">Trang chủ</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:order'%}">Đơn hàng</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:product'%}">Sản phẩm</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:category'%}">Danh mục</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:user'%}">Tài khoản</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:myaccount'%}">Xin chào, {{request.user}}</a></li>
+                <li class="nav-item"><a class="nav-link" href="{%url 'admin:logout'%}">
+                <img src="{%static 'admin/assets/img/box-arrow-right.svg'%}"></a></li>
+            </ul>
+        </div>
+    </div>
+</nav>

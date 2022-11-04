@@ -1,0 +1,176 @@
+{%extends 'client/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+<link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+<link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+<link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">THANH TOÁN</h2>
+                <p>Trang thanh toán</p>
+            </div>
+            <div class="content">
+                <form id="order">
+                    {% csrf_token %}
+                    <div class="row g-0">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <div class="card-details">
+                                    <h3 class="title">Giỏ hàng của bạn</h3>
+                                </div>
+                                <hr>
+                                {%for cartitem in cartitem_set%}
+                                <div class="product">
+                                    <div class="row justify-content-center align-items-center">
+                                        <div class="col-md-3">
+                                            <div class="product-image"><img class="img-fluid d-block mx-auto image"
+                                                    src="{%static cartitem.item.imgPath%}" /></div>
+                                        </div>
+                                        <div class="col-lg-4 product-info"><a class="product-name"
+                                                href="{%url 'shopping:itemdetail' cartitem.item.product.id%}">{{cartitem.item.title}}</a>
+                                            <div class="product-specs">
+                                                <div><span>{{cartitem.item.attrValue}}&nbsp;</span></div>
+                                            </div>
+                                        </div>
+                                        <div class="col-3 col-lg-2 quantity">
+                                            <label class="form-label d-none d-lg-block"
+                                                for="quantity">Số lượng</label>
+                                            <input type="number" id="number" style="text-align: left;"
+                                                class="form-control quantity-input" value="{{cartitem.quantity}}" disabled/>
+                                        </div>
+                                        <div class="col-9 col-lg-3 price custom-price"><span>{{cartitem.totalPrice}}VND</span></div>
+                                    </div>
+                                </div>
+                                {%endfor%}
+                                {{cart|json_script:"cart-data"}}
+
+                                <div class="product">
+                                    <div class="row justify-content-center align-items-center">
+                                        <span class="col-6 col-md-6 price">Tổng:</span>
+                                        <span class="col-6 col-md-6 price custom-price">
+                                            {{cart.totalPrice}}VND</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {%if cartitem_set%}
+                        <div class="items">
+                            <div class="card-details">
+                                
+                                <h3 class="title">Chọn hình thức thanh toán</h3>
+                                <hr>
+                                <br>
+                                <h3 class="title">COD</h3>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label" for="card_holder">Họ tên</label><input type="text" class="form-control"
+                                                id="hoten" placeholder="Họ tên" name="card_holder" 
+                                                value="{{request.user.first_name}} {{request.user.last_name}}" required />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label" for="card_number">Điện thoại liên hệ</label><input type="text" class="form-control"
+                                                id="dienthoai" placeholder="Điện thoại liên hệ" 
+                                                value="{{request.user.myuser.tel}}" name="card_number" required/>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="address">Địa chỉ</label><input type="text"
+                                                class="form-control" id="diachi" placeholder="Địa chỉ"
+                                                name="address" required/></div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><label class="form-label"
+                                                for="detail">Lưu ý</label><input type="text"
+                                                class="form-control" id="thongtin" placeholder="Lưu ý cho đơn hàng"
+                                                name="detail"/></div>
+                                    </div>
+                                    <div class="col-sm-12">
+                                        <div class="mb-3"><button class="btn btn-primary d-block w-100"
+                                            type="submit">Đặt hàng</button></div>
+                                    </div>
+                                </div>
+                                <br>
+                                <!-- <h3 class="title">Thẻ quốc tế</h3>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <script src="https://www.paypal.com/sdk/js?client-id=ASyXxWJ_5f5imlOrCD-dKV0L6McuYVWB5-CCrqAUs7SKa5I5HPtPPzHFx5LB8WiDSWkVaFBrGcsDK3qf&currency=VND"></script>
+                                    <div id="paypal-button-container" {%if cartitem_set%} disabled {%endif%}
+                                    style="text-align: center;"></div>
+                                        <script>
+                                            const cart = JSON.parse(document.getElementById('cart-data').textContent);
+                                            // console.log(cart)
+                                            
+                                            paypal.Buttons({
+                                                // Sets up the transaction when a payment button is clicked
+                                                createOrder: (data, actions) => {
+                                                return actions.order.create({
+                                                    purchase_units: [{
+                                                    amount: {
+                                                        value: cart.totalPrice // Can also reference a variable or function
+                                                    }
+                                                    }]
+                                                });
+                                                },
+                                                // Finalize the transaction after payer approval
+                                                onApprove: (data, actions) => {
+                                                return actions.order.capture().then(function(orderData) {
+                                                    // Successful capture! For dev/demo purposes:
+                                                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                                                    const transaction = orderData.purchase_units[0].payments.captures[0];
+                                                    // alert(`Transaction ${transaction.status}`);
+                                                    
+                                                    //: ${transaction.id});
+                                                    // When ready to go live, remove the alert and show a success message within this page. For example:
+                                                    // const element = document.getElementById('paypal-button-container');
+                                                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                                                    // Or go to another URL:  actions.redirect('thank_you.html');
+                                                    // location.href("/shopping/success/");
+                                                    // actions.redirect("/shopping/success/");
+                                                    // console.log(transaction)
+                                                    window.location.replace("/shopping/success");
+                                                });
+                                                }
+                                            }).render('#paypal-button-container');
+                                        </script>
+                                    </div>
+                                </div> -->
+                            </div>
+                        </div>
+                        {%elif not cartitem_set%}
+                        <div class="col-md-12 col-lg-12">
+                            <div class="items">
+                                <div class="card-details">
+                                    
+                                    <h3 class="title">__Giỏ hàng của bạn đang trống__</h3>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {%endif%}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{%static 'core/js/checkout.js'%}"></script>
+{%endblock%}

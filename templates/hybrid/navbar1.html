@@ -1,0 +1,9 @@
+<nav class="navbar navbar-light navbar-expand-lg fixed-top bg-white clean-navbar">
+    <div class="container">
+        {%if request.user.is_staff%}
+        <a class="navbar-brand logo" href="{%url 'admin:index'%}">Shopping</a>
+        {%else%}
+        <a class="navbar-brand logo" href="{%url 'shopping:index'%}">Shopping</a>
+        {%endif%}
+    </div>
+</nav>

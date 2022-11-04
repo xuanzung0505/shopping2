@@ -1,0 +1,124 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+<link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+<link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+<link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+<style>
+    @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+</style>
+{%endblock%}
+
+{%block content%}
+<main class="page shopping-cart-page">
+    <section class="clean-block clean-cart dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Đơn hàng</h2>
+                <p>Danh sách tất cả đơn hàng</p>
+            </div>
+            <div class="content">
+                <div class="row g-0">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="items">
+                            <div class="card-details">
+                                <h3 class="title">Đơn hàng hệ thống</h3>
+                                <hr>
+                                <label class="form-label" for="orderId">
+                                    Lọc theo mã:
+                                </label>
+                                <input class="form-control" type="text" name="orderId" id="orderId">
+                                <br>
+                                <label class="form-label" for="username">
+                                    Lọc theo tên người dùng:
+                                </label>
+                                <input class="form-control" type="text" name="username" id="username">
+                                <br>
+                                <label class="form-label" for="statusfilter">Lọc theo trạng thái:</label>
+                                <select class="form-control" id="statusfilter">
+                                    <option selected="selected" value="-1">tất cả</option>
+                                    <option value="0" style="color: orange;">_đang xử lý_</option>
+                                    <option value="1" style="color: blue;">_đã xác nhận_</option>
+                                    <option value="2" style="color: green;">_đang giao hàng_</option>
+                                    <option value="3" style="color: darkgreen;">_giao hàng thành công_</option>
+                                    <option value="4" style="color: red;">_đã hủy_</option>
+                                </select>
+                                <br>
+                                <label class="form-label" for="orderfield">Sắp xếp theo:</label>
+                                <select class="form-control" id="orderfield">
+                                    <option selected="selected" value="id">mã</option>
+                                    <option value="create_at">thời gian</option>
+                                    <option value="totalPrice">tổng tiền</option>
+                                </select>
+                                <br>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="orderType" id="orderAscending"
+                                        checked value="ascending">
+                                    <label class="form-check-label" for="orderType">
+                                        tăng dần
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="orderType" id="orderDescending"
+                                        value="descending">
+                                    <label class="form-check-label" for="orderType">
+                                        giảm dần
+                                    </label>
+                                </div>
+                                <br>
+                                <button class="btn btn-lg btn-outline-primary w-100" id="filterButton">
+                                    <i class="icon-filter"></i>Lọc kết quả</button>
+                            </div>
+                            <br>
+                            <p id="dataQuantity">đang hiển thị ? đơn hàng</p>
+                            <hr>
+                            <div class="product">
+                                <div class="row">
+                                    <div class="col-5 price" style="text-align: left;">
+                                        <span>Đơn hàng</span>
+                                    </div>
+                                    <div class="col-2 price" style="text-align: center;">
+                                        <span>Trạng thái</span>
+                                    </div>
+                                    <div class="col-5 price"><span>Tổng tiền</span></div>
+                                </div>
+                            </div>
+                            {{orderList|json_script:'orderList-data'}}
+                            <div id="orderList">
+                            </div>
+                        </div>
+
+                        <nav class="d-flex justify-content-center">
+                            <ul class="pagination" id="pagi">
+                                <li class="page-item disabled" id="pagiItem" name="prev"><a class="page-link" href="#"
+                                        aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                <li class="page-item active" id="pagiItem" value="1"><a class="page-link" href="#">1</a>
+                                </li>
+                                <li class="page-item" id="pagiItem" value="2"><a class="page-link" href="#">2</a></li>
+                                <li class="page-item" id="pagiItem" value="3"><a class="page-link" href="#">3</a></li>
+                                <li class="page-item" id="pagiItem" name="next"><a class="page-link" href="#"
+                                        aria-label="Next"><span aria-hidden="true">»</span></a></li>
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+<script src="{%static 'admin/js/order.js'%}"></script>
+{%endblock%}

@@ -1,0 +1,124 @@
+{%extends 'admin/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'admin/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'admin/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'admin/assets/css/vanilla-zoom.min.css'%}">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+
+
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page catalog-page">
+    <section class="clean-block clean-catalog dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">SẢN PHẨM</h2>
+                <p>Sản phẩm trong hệ thống</p>
+                <br>
+                <button type="button" class="btn btn-lg btn-primary" id="addProduct"><i class="icon-plus-sign"></i>Thêm sản phẩm</button>
+            </div>
+            <div class="content">
+                <br>
+                <div class="row">
+                    <div class="col-md-3"></div>
+                    <div class="col-lg-6 col-md-8 col-12">
+                        <div class="input-group" id="search">
+                            {% csrf_token %}
+                            <input type="search" class="form-control rounded" placeholder="Tìm kiếm theo tên"
+                                aria-label="Search" aria-describedby="search-addon" id="searchInfo" />
+                            <button type="button" class="btn btn-outline-primary"><i class="icon-search"></i>Tìm kiếm</button>
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="d-none d-md-block">
+                            <div class="filters">
+                                <div class="filter-item" id="categorylist">
+                                    <h3>Categories</h3>
+                                    <div class="form-check"><input class="form-check-input" type="radio" value="0"
+                                        name="category" id="category0"><label class="form-check-label"
+                                        for="category0">Tất cả</label></div>
+                                    {%for category in categoryList%}
+                                        <div class="form-check"><input class="form-check-input" type="radio" value={{category.id}}
+                                            name="category" id="category{{category.id}}">
+                                            <label class="form-check-label"
+                                            for="category{{category.id}}">{{category.title}}</label>
+                                            {%if not category.active%}
+                                                <i class="icon-minus-sign"></i>
+                                            {%endif%}
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-md-none"><a class="btn d-md-none filter-collapse"
+                                data-bs-toggle="collapse" aria-expanded="false" aria-controls="filters" href="#filters"
+                                role="button">Filters<i class="icon-arrow-down filter-caret"></i></a>
+                            <div class="collapse" id="filters">
+                                <div class="filters">
+                                    <div class="filter-item" id="categorylist">
+                                        <h3>Categories</h3>
+                                        <div class="form-check"><input class="form-check-input" type="radio" value="0"
+                                            name="category_col" id="category0"><label class="form-check-label"
+                                            for="category0">None</label></div>
+                                        {%for category in categoryList%}
+                                            <div class="form-check"><input class="form-check-input" type="radio" value={{category.id}}
+                                                name="category_col" id="category{{category.id}}"><label class="form-check-label"
+                                                for="category{{category.id}}">{{category.title}}</label></div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="products">
+                            <p id="dataQuantity">đang hiển thị ? sản phẩm</p>
+                            <div class="row g-0" id="itemList">
+                                {{productList|json_script:"productlist-data"}}
+                            </div>
+                            <nav>
+                                <ul class="pagination" id="pagi">
+                                    <li class="page-item disabled" id="pagiItem" name="prev"><a class="page-link" href="#"
+                                            aria-label="Previous"><span aria-hidden="true">«</span></a></li>
+                                    <li class="page-item active" id="pagiItem" value="1"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item" id="pagiItem" value="2"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item" id="pagiItem" value="3"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item" id="pagiItem" name="next"><a class="page-link" href="#" aria-label="Next"><span
+                                                aria-hidden="true">»</span></a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%include 'footer.html'%}
+
+{%block jsblock%}
+<script src="{%static 'admin/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'admin/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'admin/assets/js/theme.js'%}"></script>
+<script src="{%static 'admin/js/product.js'%}"></script>
+{%endblock%}

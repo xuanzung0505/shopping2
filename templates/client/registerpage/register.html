@@ -1,0 +1,64 @@
+{%extends 'client/base1.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+
+    <style>
+        .required-field::after {
+            content: "*";
+            color: red;
+        }
+    </style>
+{%endblock%}
+
+{%block content%}
+    <main class="page login-page">
+        <section class="clean-block clean-form dark">
+            <div class="container">
+                <div class="block-heading">
+                    <h2 class="text-info">Đăng ký</h2>
+                </div>
+                <form id="register">
+                    {% csrf_token %}
+
+                    <div class="mb-3"><label class="form-label required-field" for="username">Tài khoản</label>
+                        <div><input class="form-control" required name="username" id="username"
+                            type="text" placeholder="John Doe" maxlength="16" minlength="6"></div>
+                    </div>
+                    <div class="mb-3"><label class="form-label required-field" for="email">Địa chỉ email</label>
+                        <div><input class="form-control" name="email" id="email" type="email" placeholder="JohnDoe@mail.com"></div>
+                    </div>
+                    <div class="mb-3"><label class="form-label required-field" for="password">Mật khẩu</label>
+                        <div><input type="password" name="password1" class="form-control" required 
+                            id="password1" placeholder="mật khẩu" maxlength="22" minlength="8"></div>
+                    </div>
+                        <div class="mb-3"><label class="form-label required-field" for="password">Xác thực mật khẩu</label>
+                        <div><input type="password" name="password2" class="form-control" required
+                            id="password2" placeholder="xác thực mật khẩu" maxlength="22" minlength="8"></div>
+                    </div>
+                    <div>
+                        <div class="mb-3"><label class="form-label" for="password">Số điện thoại</label>
+                        <div><input class='form-control' type="text" name="tel" id="tel" 
+                            maxlength="12" minlength="6" placeholder="Số điện thoại"></div>
+                    </div>
+                    <div class="mb-3"></div><button class="btn btn-outline-primary" type="submit" id="register">Xác nhận</button>
+                    <div class="mb-3"></div>đã có tài khoản?<a href="/login">đăng nhập</a>
+                </form>
+            </div>
+        </section>
+    </main>
+{%endblock%}
+
+{%block jsblock%}
+    <script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+    <script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+    <script src="{%static 'core/assets/js/theme.js'%}"></script>
+    <script src="{%static 'core/js/register.js'%}"></script>
+
+{%endblock%}

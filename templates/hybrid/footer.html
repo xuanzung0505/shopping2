@@ -1,0 +1,45 @@
+<footer class="page-footer dark">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-4">
+                <h5>Khởi đầu</h5>
+                <ul>
+                    {%if request.user.id is None%}
+                        <li><a href="{%url 'shopping:index'%}">Trang chủ</a></li>
+                    {%else%}
+                        {%if request.user.is_staff%}
+                        <li><a href="{%url 'admin:index'%}">Trang chủ</a></li>
+                        {%else%}
+                        <li><a href="{%url 'shopping:index'%}">Trang chủ</a></li>
+                        {%endif%}
+                    {%endif%}
+                </ul>
+            </div>
+            <div class="col-sm-4">
+                <h5>Hỗ trợ</h5>
+                <ul>
+                    <!-- {{request.user}} -->
+                    {%if request.user.id is None%}
+                        <li><a href="{%url 'hybrid:FAQ'%}">FAQ</a></li>
+                    {%else%}
+                        {%if request.user.is_staff%}
+                        <li><a href="{%url 'admin:FAQ'%}">FAQ</a></li>
+                        {%else%}
+                        <li><a href="{%url 'shopping:FAQ'%}">FAQ</a></li>
+                        {%endif%}
+                    {%endif%}
+                </ul>
+            </div>
+            <div class="col-sm-4">
+                <h5>Chính sách</h5>
+                <ul>
+                    <li><a href="{%url 'hybrid:termsofservice'%}">Điều khoản dịch vụ</a></li>
+                    <!-- <li><a href="#">Quyền riêng tư</a></li> -->
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer-copyright">
+        <p>© 2022 Copyright Text</p>
+    </div>
+</footer>

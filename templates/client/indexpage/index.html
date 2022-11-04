@@ -1,0 +1,117 @@
+{%extends 'client/base.html'%}
+{%load static%}
+
+{%block cssblock%}
+    <link rel="stylesheet" href="{%static 'core/assets/bootstrap/css/bootstrap.min.css'%}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:400,400i,700,700i,600,600i">
+    <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
+    <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+    <style>
+        @import url(//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css);
+    </style>
+{%endblock%}
+
+{%block content%}
+<main class="page landing-page">
+    <section class="clean-block clean-hero" style="background-image:url(&quot;assets/img/tech/image4.jpg&quot;);color:rgba(9, 162, 255, 0.85);">
+        <div class="text">
+            <h2>Mua sắm dễ dàng hơn</h2>
+            <p>Chúng tôi mang đến một giải pháp mua sắm tối ưu nhất</p><a class="btn btn-outline-light btn-lg" type="button" href="{%url 'shopping:catalog'%}">Sản phẩm</a>
+        </div>
+    </section>
+    <section class="clean-block slider dark">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Hệ thống</h2>
+                <p>Hệ thống đáng tin cậy cho mua sắm</p>
+            </div>
+            <div class="carousel slide" data-bs-ride="carousel" id="carousel-1">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <img class="d-flex justify-content-center" style="width:60%;margin:auto;" src="{%static 'core/assets/img/other/index/3.png'%}" alt="Slide Image">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-flex justify-content-center" style="width:60%;margin:auto;" src="{%static 'core/assets/img/other/index/1.png'%}" alt="Slide Image">
+                    </div>
+                    <div class="carousel-item">
+                        <img class="d-flex justify-content-center" style="width:60%;margin:auto;" src="{%static 'core/assets/img/other/index/4.png'%}" alt="Slide Image">
+                    </div>
+                </div>
+                <div><a class="carousel-control-prev" href="#carousel-1" role="button" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                    <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#carousel-1" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon"></span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </div>
+                <ol class="carousel-indicators">
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="0" class="active"></li>
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="1"></li>
+                    <li data-bs-target="#carousel-1" data-bs-slide-to="2"></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+    <section class="clean-block features">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Tính năng</h2>
+                <p>Tính năng hệ thống</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-5 feature-box"><i class="icon-star icon"></i>
+                    <h4>Bootstrap 4</h4>
+                    <p>Công nghệ bootstrap</p>
+                </div>
+                <div class="col-md-5 feature-box"><i class="icon-pencil icon"></i>
+                    <h4>Dễ sử dụng</h4>
+                    <p>Chỉ cần bán hàng, hệ thống để chúng tôi lo!</p>
+                </div>
+                <div class="col-md-5 feature-box"><i class="icon-screen-smartphone icon"></i>
+                    <h4>Responsive</h4>
+                    <p>Đáp ứng mọi thiết bị và môi trường</p>
+                </div>
+                <div class="col-md-5 feature-box"><i class="icon-refresh icon"></i>
+                    <h4>Mọi trình duyệt</h4>
+                    <p>Đáp ứng trên mọi trình duyệt</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="clean-block about-us">
+        <div class="container">
+            <div class="block-heading">
+                <h2 class="text-info">Đội ngũ phát triển</h2>
+                <p>Ai đã phát triển trang web này?</p>
+            </div>
+            <div class="row justify-content-center">
+                <div class="col-sm-6 col-lg-4">
+                    <div class="card text-center clean-card"><img class="card-img-top w-100 d-block" src="{%static 'core/assets/img/other/index/team1.png'%}">
+                        <div class="card-body info">
+                            <h4 class="card-title">Trương Xuân Dũng</h4>
+                            <p class="card-text">Nhà phát triển</p>
+                            <div class="icons">
+                                <a href="mailto:truongxuandung.0.5.0.5@gmail.com"><i class="icon-envelope-alt"></i></a>
+                                <a href="https://www.facebook.com/truongxuan.dung.5/"><i class="icon-facebook"></i></a>
+                                <a href="https://www.instagram.com/xuanzung0505/"><i class="icon-instagram"></i></a>
+                                <a href="https://www.linkedin.com/in/xuanzung0505/"><i class="icon-linkedin"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{%endblock%}
+
+{%block jsblock%}
+<script src="{%static 'core/assets/bootstrap/js/bootstrap.min.js'%}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.js"></script>
+<script src="{%static 'core/assets/js/vanilla-zoom.js'%}"></script>
+<script src="{%static 'core/assets/js/theme.js'%}"></script>
+{%endblock%}
+
