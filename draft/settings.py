@@ -25,7 +25,7 @@ SECRET_KEY = 'ze%bf^8#0@6cj73&c0-m_#w=e0_yu7vhngb1^9=!80(fi@d8$$'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['shopping2-env.eba-vtpupst3.us-west-2.elasticbeanstalk.com']
+ALLOWED_HOSTS = ['shopping2-env.eba-vtpupst3.us-west-2.elasticbeanstalk.com', '127.0.0.1']
 
 
 # Application definition
