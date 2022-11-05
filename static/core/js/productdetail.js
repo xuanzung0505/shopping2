@@ -248,7 +248,7 @@ function renderRelatedProduct(){
         "<div class='col-sm-6 col-lg-4'>"+
             "<div class='clean-related-item'>"+
                 "<div class='image'><a href='/detail/"+relatedProduct.id+"'>"+
-                '<img class="img-fluid d-block mx-auto" src="/static/'+relatedProduct.imgPath+'/"></a></div>'+
+                '<img class="img-fluid d-block mx-auto" src="/static/'+relatedProduct.imgPath+'"></a></div>'+
                 '<div class="related-name" data-id="'+relatedProduct.id+'"><a href="/detail/'+relatedProduct.id+'">'+relatedProduct.title+'</a>'+
                     '<div class="rating"></div>'+
                     '<h4>'+relatedProduct.unitPrice+'VND</h4>'+
