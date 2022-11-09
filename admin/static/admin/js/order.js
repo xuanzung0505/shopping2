@@ -161,6 +161,7 @@ function appendData(id, totalPrice, create_at, active, status, user) {
         '</div>' +
         '</div>'
     )
+    console.log(id)
 }
 
 
@@ -179,6 +180,9 @@ function renderData() {
         active = item.active
         status = item.status
         user = item.user
+
+        console.log(id)
+
         // console.log(pk, title, price, product_img)
         appendData(id, totalPrice, create_at, active, status, user)
     }

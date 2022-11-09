@@ -204,7 +204,7 @@ class OrderPage(LoginRequiredMixin, View):
         orderList = OrderDAO.getAllOrder()
         orderList = OrderSerializer(orderList, many=True)
         orderList = orderList.data
-
+        # print(orderList)
         context = {"orderList": orderList}
         return render(request, 'admin/orderpage/order.html', context)
         

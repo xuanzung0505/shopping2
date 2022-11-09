@@ -131,7 +131,8 @@ function formatDateTime(create_at) {
 
 function appendData(id, totalPrice, create_at, active, status) {
     var statusSection = ''
-
+    console.log(id)
+    
     if (!active) {
         statusSection = '<p style="color: red; font-weight: bold;">_đã hủy_</p>'
     }
@@ -174,7 +175,8 @@ function renderData() {
         create_at = item.create_at;
         active = item.active
         status = item.status
-
+        
+        console.log(id)
         // console.log(pk, title, price, product_img)
         appendData(id, totalPrice, create_at, active, status)
     }
