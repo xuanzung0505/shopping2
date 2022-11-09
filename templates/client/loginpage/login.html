@@ -14,6 +14,11 @@
         <section class="clean-block clean-form dark">
             <div class="container">
                 <div class="block-heading">
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div {% if message.tags %} class="{{ message.tags }} alert alert-primary" role="alert" {% endif %}>{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
                     <h2 class="text-info">Đăng nhập</h2>
                 </div>
                 <div>
@@ -23,6 +28,7 @@
                         <div class="mb-3"><label class="form-label" for="password">Mật khẩu</label><input id='password' class="form-control" type="password" name="password" required></div>
                         <div class="mb-3"></div><button class="btn btn-outline-primary" type="submit">Xác nhận</button>
                         <div class="mb-3"></div>chưa có tài khoản?<a href="/register">đăng ký</a>
+                        <div class="mb-3"></div>quên mật khẩu?<a href="/forgotpassword">đổi mật khẩu</a>
                     </form>
                 </div>
                 

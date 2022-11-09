@@ -39,10 +39,47 @@
                             {% csrf_token %}
                             <input type="search" class="form-control rounded" placeholder="Tìm kiếm theo tên"
                                 aria-label="Search" aria-describedby="search-addon" id="searchInfo" />
-                            <button type="button" class="btn btn-outline-primary"><i class="icon-search"></i>Tìm kiếm</button>
+                            <button type="button" class="btn btn-outline-primary"><i class="icon-search"></i>Tìm
+                                kiếm</button>
                         </div>
+                        <div><br></div>
+                        <br>
                     </div>
                     <div class="col-lg-3">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="row">
+                        <div class="col-md-3"></div>
+                        <div class="col-lg-2 col-md-2">
+                            <label class="form-label" for="orderfield" style="margin-left: 5px;">Sắp xếp theo:</label>
+                        </div>
+                        <div class="col-lg-2 col-md-3">
+                            <select class="form-control" id="orderfield">
+                                <option selected="selected" value="id">mặc định</option>
+                                <option value="unitPrice">giá</option>
+                                <option value="title">tên</option>
+                                <option value="rating">đánh giá</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-6 d-flex justify-content-center" style="margin-top: 5px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="orderType" id="orderAscending"
+                                    checked value="ascending">
+                                <label class="form-check-label" for="orderType">
+                                    tăng dần
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2 col-6 d-flex justify-content-center" style="margin-top: 5px;">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="orderType" id="orderDescending"
+                                    value="descending">
+                                <label class="form-check-label" for="orderType">
+                                    giảm dần
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="row">

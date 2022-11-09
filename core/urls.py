@@ -23,7 +23,11 @@ urlpatterns = [
     path('login/', LoginPage.as_view(), name='login'),
     path('logout/', LogoutPage.as_view(), name='logout'),
     path('register/', RegisterPage.as_view(), name='register'),
-
+    path('activateUrl/<str:uidb64>/<str:token>/', activate, name='activateUrl'),
+    path('forgotpassword/', ForgotPasswordPage.as_view(), name='forgotpassword'),
+    path('forgotpasswordUrl/<str:uidb64>/<str:token>/', forgotPassword, name='forgotpasswordUrl'),
+    path('changeforgotpassword/', ChangeForgotPasswordPage.as_view(), name='changeforgotpassword'),
+    
     path('catalog/', CatalogPage.as_view(), name='catalog'),
     path('catalog/search/', CatalogSearch.as_view(), name='catalogsearch'),
     # path('catalog/search/All/', views.catalogSearchAll.as_view(), name='catalogsearchall'),

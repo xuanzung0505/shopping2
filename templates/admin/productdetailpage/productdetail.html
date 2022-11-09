@@ -280,6 +280,27 @@
                                     </div>
                                 </div>
                             </div>
+                            
+                            <div class="overlay" id="itemdelete">
+                                <div class="wrapper">
+                                    <div class="row">
+                                        <div class="col-11">
+                                            <h3 id="productDeleteH3">Bạn thật sự muốn xóa sản phẩm không?</h3>
+                                        </div>
+                                        <div class="col-1">
+                                            <a class="close" href="#!">&times;</a>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-success w-100" id="approveProductDelete">Có</a>
+                                        </div>
+                                        <div class="col-md-6 col-12 d-flex justify-content-center" style="padding-top: 10px;">
+                                            <a href="#!" class="btn btn-outline-danger w-100" type="button">Không</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="overlay" id="imgPathDelete">
                                 <div class="wrapper">
@@ -313,7 +334,7 @@
                                 <div class="info">
                                     <div id="attributelist">
                                         {%for attr in attrlist%}
-                                            <div class="blank" data-id="{{attr.id}}" data-index="{{attr.index}}">
+                                            <div class="blank blankattr" data-id="{{attr.id}}" data-index="{{attr.index}}">
                                                 <label for="Attrtitle">Tên đặc tính #{{attr.index}}</label>
                                                 <div class="row" style="margin-bottom: 10px;">
                                                     <div class="col-md-10 col-12">

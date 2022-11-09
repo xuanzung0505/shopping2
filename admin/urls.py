@@ -22,6 +22,9 @@ urlpatterns = [
     path('login/', LoginPage.as_view(), name='login'),
     path('logout/', LogoutPage.as_view(), name='logout'),
     path('', IndexPage.as_view(), name='index'),
+    path('forgotpassword/', ForgotPasswordPage.as_view(), name='forgotpassword'),
+    path('forgotpasswordUrl/<str:uidb64>/<str:token>/', forgotPassword, name='forgotpasswordUrl'),
+    path('changeforgotpassword/', ChangeForgotPasswordPage.as_view(), name='changeforgotpassword'),
 
     path('order/', OrderPage.as_view(), name='order'),
     path('order/filter/', OrderFilterPage.as_view(), name='orderfilter'),
@@ -33,6 +36,7 @@ urlpatterns = [
     path('product/filter/<str:category_id>/', ProductFilter.as_view(), name='productfilter'),
 
     path('product/<int:item_id>/', ProductDetailPage.as_view(), name='productdetail'),
+    path('product/delete/<int:item_id>/', ProductDeletePage.as_view(), name='productdelete'),
 
     path('product/add/', ProductAddPage.as_view(), name='productadd'),
 

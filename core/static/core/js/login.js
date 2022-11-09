@@ -47,15 +47,15 @@ $(document).ready(function(){
             success: function(response){
 
                 if(response.result == true){
-                    console.log("ok")
-                    alert("đăng nhập thành công")
+                    // console.log("ok")
+                    alert(response.msg)
                     setTimeout(function(){
                         location.replace('/')
                     }, 1000)
                 }
                 else{
-                    console.log("not ok")
-                    alert("đăng nhập thất bại")
+                    // console.log("not ok")
+                    alert(response.msg)
                 }
             },
             error: function(err){

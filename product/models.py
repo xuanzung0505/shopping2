@@ -22,7 +22,7 @@ class Product(models.Model):
     totalStar = models.IntegerField(default=0)
     imgPath = models.CharField(default='', max_length=255)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
+    
     def __str__(self):
         return self.title
 

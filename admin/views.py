@@ -29,22 +29,142 @@ import json
 #models sum
 from django.db.models import Sum
 
+#template loader
+from django.template.loader import render_to_string
+
+#lib for email auth
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from django.contrib import messages
+
+#lib for change password mail
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
 admin = True
 LOGIN_URL = '/admin/login'
+
+def authen(request):
+    if not (request.user.is_authenticated and request.user.is_staff == admin):
+        logout(request)
+        # return render(request,'admin/loginpage/login.html')
+        return False
+    return True
+
+def forgotPasswordEmail(request,user,to_email):
+    mail_subject = "thay đổi mật khẩu của bạn"
+    message = render_to_string("admin/forgotpassword_mail/template_forgotpassword.html", {
+        'user': user,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': PasswordResetTokenGenerator().make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        return "gửi mail thành công, hãy kiểm tra email của bạn (lưu ý thư mục spam)"
+    else:
+        return "gửi mail đổi mật khẩu thất bại"
+
+def forgotPassword(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = UserDAO.getUserByID(uid)
+    except:
+        user = None
+
+    if user is not None:
+        if PasswordResetTokenGenerator().check_token(user,token):
+            # user.is_active = True
+            # user.myuser.email_auth = True
+            # user.save()
+            # messages.success(request, "tài khoản đã được kích hoạt thành công.")
+            serializedUser = UserSerializer(user)
+            serializedUser = serializedUser.data
+
+            request.session['uidb64'] = uidb64
+            request.session['token'] = token
+            request.session['user'] = serializedUser
+            return redirect("admin:changeforgotpassword")
+
+        else:
+            messages.error(request, "link đổi mật khẩu đã hết hạn hoặc hỏng, chúng tôi sẽ gửi lại mail mới")
+            forgotPasswordEmail(request,user,user.myuser.email)
+            return redirect("admin:login")
+    else:
+        messages.error(request, "có lỗi khi đổi mật khẩu tài khoản.")
+        return redirect("admin:login")
+
+class ForgotPasswordPage(View):
+    def get(self, request):
+        if (request.user.is_authenticated and request.user.is_staff == admin):
+            return render(request,'admin/indexpage/index.html')
+        return render(request,'admin/forgotpasswordpage/forgotpassword.html')
+    
+    def post(self, request):
+        username = request.POST.get('username')
+        user = UserDAO.getUserByUsername(username)
+        
+        if user:
+            if user.is_staff == admin:
+                result = True
+                message = forgotPasswordEmail(request, user, user.myuser.email)
+                return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+            else:
+                result = False
+                message = 'tài khoản tồn tại nhưng không được cấp quyền'
+                return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+        else:
+            result = False
+            message = 'tài khoản không tồn tại'
+            return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+
+class ChangeForgotPasswordPage(View):
+    def get(self, request):
+        if (request.user.is_authenticated and request.user.is_staff == admin):
+            return render(request,'admin/indexpage/index.html')
+        try:
+            uidb64 = request.session.pop('uidb64')
+            token = request.session.pop('token')
+            user = request.session.pop('user')
+            request.session.modified = True
+
+            # user = UserSerializer(user)
+            # print(user)
+            context = {'user':user}
+
+            return render(
+                request,'admin/changeforgotpasswordpage/changeforgotpassword.html', context)
+        except:
+            return redirect('admin:login')
+
+    def post(self, request):
+        userid = int(request.POST.get('userpk'))
+        password = str(request.POST.get('password'))
+        
+        user = UserDAO.getUserByID(userid)
+        user.set_password(password)
+
+        try:
+            UserDAO.saveUser(user)
+        except:
+            message = 'đổi mật khẩu thất bại'
+            return JsonResponse({'result':False, 'msg':message}, status=200, safe=False)
+        
+        message = 'đổi mật khẩu thành công'
+        return JsonResponse({'result':True, 'msg':message}, status=200, safe=False)
 
 #only admin
 class LoginPage(View):
     def get(self,request):
-        if request.user.is_authenticated and request.user.is_staff == admin:
-            return render(request,'admin/indexpage/index.html')
-        
-        logout(request)
-        return render(request,'admin/loginpage/login.html')
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
+        return render(request,'admin/indexpage/index.html')
     
     def post(self, request):
-        if request.is_ajax():
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
         # print("csrfToken:")
         # print(csrfToken)
@@ -52,11 +172,17 @@ class LoginPage(View):
         
         result = False
         # print("Staff:"+user.is_staff)
-        if user and user.is_staff == admin:
-            login(request, user)
-            result = True
-
-        return JsonResponse({"result":result}, status=200, safe=False)
+        if user:
+            if user.is_staff == admin:
+                login(request, user)
+                result = True
+                message = "đăng nhập thành công"
+            else:
+                message = 'chỉ admin/staff mới có thể đăng nhập'
+        else:
+            message = 'username/mật khẩu không đúng'
+            
+        return JsonResponse({"result":result, "msg":message}, status=200, safe=False)
 
 class LogoutPage(View):
     def get(self,request):
@@ -66,28 +192,24 @@ class LogoutPage(View):
 class IndexPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
-        if request.user.is_staff == admin:
-            return render(request,'admin/indexpage/index.html')
-
-        logout(request)
-        return render(request,'admin/loginpage/login.html')
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
+        return render(request,'admin/indexpage/index.html')
 
 class OrderPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
-        if request.user.is_staff == admin:
-            orderList = OrderDAO.getAllOrder()
-            orderList = OrderSerializer(orderList, many=True)
-            orderList = orderList.data
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
+        orderList = OrderDAO.getAllOrder()
+        orderList = OrderSerializer(orderList, many=True)
+        orderList = orderList.data
 
-            context = {"orderList": orderList}
-            return render(request, 'admin/orderpage/order.html', context)
+        context = {"orderList": orderList}
+        return render(request, 'admin/orderpage/order.html', context)
         
-        logout(request)
-        return render(request,'admin/loginpage/login.html')
-
 class OrderFilterPage(LoginRequiredMixin, View):
-    login_url='/login'
+    login_url=LOGIN_URL
     def post(self, request):
         username = str(request.POST.get("username"))
         orderId = str(request.POST.get("orderId"))
@@ -108,6 +230,9 @@ class OrderFilterPage(LoginRequiredMixin, View):
 class OrderDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request, order_id):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
+
         order = OrderDAO.getOrderByID(order_id)
         orderItemList = OrderDAO.getAllOrderItemByOrder(order)
 
@@ -191,6 +316,8 @@ class OrderDetailSubmitPage(LoginRequiredMixin, View):
 class ProductPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
         productList = ProductDAO.getAllProduct()
         categoryList = CategoryDAO.getAllCategory()
@@ -205,16 +332,19 @@ class ProductPage(LoginRequiredMixin, View):
         return render(request,'admin/productpage/product.html',context)
 
 class ProductSearch(LoginRequiredMixin, View):
-    login_url='admin/login'
+    login_url=LOGIN_URL
     def post(self, request):
         search_query = request.POST.get("searchQuery")
         categoryId = int(request.POST.get("category"))
-
+        orderField = str(request.POST.get("orderField"))
+        orderType = str(request.POST.get("orderType"))
+        
         if search_query is None:
             search_query = ''
 
         # product_qset = Product.objects.filter(title__icontains = search_query, active=True)
-        productList = ProductDAO.searchAllProductByName(search_query, categoryId = categoryId)
+        productList = ProductDAO.searchAllProductByName(search_query, categoryId = categoryId, orderField=orderField,
+        orderType=orderType)
 
         productList = ProductSerializer(productList, many=True)
         productList = productList.data
@@ -244,6 +374,8 @@ class ProductFilter(LoginRequiredMixin, View):
 class ProductDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request, item_id):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # product = Product.objects.get(pk=product_id)
         item = ProductDAO.getProductByID(item_id)
         
@@ -330,6 +462,8 @@ class ProductDetailPage(LoginRequiredMixin, View):
 class ProductAddPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         categoryList = CategoryDAO.getActiveCategory()
         context = {"categoryList": categoryList}
         return render(request,'admin/productaddpage/productadd.html', context)
@@ -351,6 +485,18 @@ class ProductAddPage(LoginRequiredMixin, View):
         try:
             product = ProductDAO.createProduct(title=title, description=description,category_id= category,
         imgPath=imgPath, unitPrice=unitPrice, quantity=quantity, active=active)
+        except:
+            traceback.print_exc()
+            return JsonResponse({"result":False}, status=200, safe=False)
+            
+        return JsonResponse({"result":True, 'productPK':product.pk}, status=200, safe=False)
+
+class ProductDeletePage(LoginRequiredMixin, View):
+    def post(self, request, item_id):
+        product = ProductDAO.getProductByID(item_id)
+
+        try:
+            ProductDAO.deleteProduct(product)
         except:
             traceback.print_exc()
             return JsonResponse({"result":False}, status=200, safe=False)
@@ -558,10 +704,11 @@ class ProductVarianceDeletePage(LoginRequiredMixin, View):
 
         return JsonResponse({"result":True}, status=200, safe=False)
 
-
 class UserPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
         userList = UserDAO.getAllUser()
         userList = UserSerializer(userList, many=True)
@@ -570,7 +717,7 @@ class UserPage(LoginRequiredMixin, View):
         return render(request,'admin/userpage/user.html',context)
 
 class UserFilterPage(LoginRequiredMixin, View):
-    login_url='/login'
+    login_url=LOGIN_URL
     def post(self, request):
         userId = str(request.POST.get("userId"))
         username = str(request.POST.get("username"))
@@ -595,6 +742,8 @@ class UserFilterPage(LoginRequiredMixin, View):
 class UserDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request,user_id):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
         user = UserDAO.getUserByID(user_id)
 
@@ -629,6 +778,8 @@ class UserDetailPage(LoginRequiredMixin, View):
 class MyAccountPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
 
         user = request.user
@@ -726,6 +877,8 @@ class UserDeletePage(LoginRequiredMixin, View): #stop deleting user like this
 class CategoryPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         categoryList = CategoryDAO.getAllCategory()
 
         # user = request.user
@@ -738,6 +891,8 @@ class CategoryPage(LoginRequiredMixin, View):
 class CategoryDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request,category_id):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
 
         category = CategoryDAO.getCategoryByID(category_id)
@@ -780,6 +935,8 @@ class CategoryDetailPage(LoginRequiredMixin, View):
 class CategoryAddPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
 
         return render(request,'admin/categoryaddpage/categoryadd.html')
@@ -817,6 +974,8 @@ class CategoryDeletePage(LoginRequiredMixin, View):
 class StatisticsPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'admin/loginpage/login.html')
         ###stats for profit
         successfulOrderList = OrderDAO.getActiveOrderByStatus(3)
         totalPrice = successfulOrderList.aggregate(Sum('totalPrice'))
@@ -866,6 +1025,5 @@ class StatisticsPage(LoginRequiredMixin, View):
 class FAQPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
-
         context = {}
         return render(request,'admin/FAQpage/FAQ.html', context)

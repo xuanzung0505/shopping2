@@ -463,8 +463,8 @@ function appendOrAbortAttrAdd(value){
 
     if (value){
         //find max index
-        var maxIndex = 0
-        $(".blank").each(function(index,item){
+        var maxIndex = -1
+        $(".blankattr").each(function(index,item){
             maxIndex = index
         })
         maxIndex ++
@@ -945,6 +945,25 @@ $(document).ready(function(){
                 alert("Vui lòng kiểm tra lại trường thông tin")
             }
         }
+    })
+
+    //approve delete product
+    $("#approveProductDelete").on("click",function(e){
+        prepAjaxRequest()
+        $.ajax({
+            url:"/admin/product/delete/"+item.id+'/',
+            type:"post",
+            dataType: "json",
+            success: function(response){
+                if(response.result){
+                    alert("Xóa sản phẩm thành công")
+                }
+                else{
+                    alert("Xóa sản phẩm thất bại")
+                }
+            }
+        })
+        location.replace('/admin/product')
     })
 
     //edit img path

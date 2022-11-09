@@ -9,6 +9,10 @@ class UserDAO():
     def getUserByID(user_id):
         user = User.objects.get(pk=user_id)
         return user
+    
+    def getUserByUsername(username):
+        user = User.objects.get(username=username)
+        return user
 
     def getMyUserByUser(user):
         myUser = MyUser.objects.get(user=user)
@@ -44,6 +48,10 @@ class UserDAO():
             return myUser
         else:
             return None
+
+    def findUserByUsername(username):
+        user = User.objects.get(username=username)
+        return user
 
     def filterUser(idcontain,username,email,authorize,active,orderField,orderType):
         if orderField == 'email':

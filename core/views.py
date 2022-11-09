@@ -4,11 +4,8 @@ from django.views import View
 from django.http import JsonResponse
 
 #authentication
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.mixins import LoginRequiredMixin
-
-from .forms import CreateUserForm
 
 #DAO
 from businesslogic.itemDAO.ItemDAO import ItemDAO
@@ -17,7 +14,6 @@ from businesslogic.categoryDAO.CategoryDAO import CategoryDAO
 from businesslogic.cartDAO.CartDAO import CartDAO
 from businesslogic.orderDAO.OrderDAO import OrderDAO
 from businesslogic.userDAO.UserDAO import UserDAO
-# from businesslogic.userDAO.UserDAO import UserDAO
 
 #serializer
 from django.core import serializers
@@ -32,18 +28,172 @@ import json
 #template loader
 from django.template.loader import render_to_string
 
+#lib for email auth
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes, force_str
+from django.core.mail import EmailMessage
+from user.tokens import account_activation_token
+from django.contrib import messages
+
+#lib for change password mail
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+#only client
 admin = False
 LOGIN_URL = '/login'
 
-#only client
+def authen(request):
+    if not (request.user.is_authenticated and request.user.is_staff == admin):
+        logout(request)
+        # return render(request,'admin/loginpage/login.html')
+        return False
+    return True
+
+def activateEmail(request,user,to_email):
+    mail_subject = "kích hoạt tài khoản của bạn"
+    message = render_to_string("client/activatepage/template_activate_account.html", {
+        'user': user,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': account_activation_token.make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        return "đăng ký thành công, hãy kiểm tra email của bạn (lưu ý thư mục spam)"
+    else:
+        return "gửi mail xác minh thất bại"
+
+def activate(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = UserDAO.getUserByID(uid)
+    except:
+        user = None
+
+    if user is not None:
+        if account_activation_token.check_token(user,token):
+            user.is_active = True
+            user.myuser.email_auth = True
+            user.save()
+
+            messages.success(request, "tài khoản đã được kích hoạt thành công.")
+        else:
+            messages.error(request, "link kích hoạt đã hết hạn hoặc hỏng, chúng tôi sẽ gửi lại mail mới")
+            activateEmail(request,user,user.myuser.email)
+    else:
+        messages.error(request, "có lỗi khi kích hoạt tài khoản.")
+
+    return redirect("shopping:login")
+
+def forgotPasswordEmail(request,user,to_email):
+    mail_subject = "thay đổi mật khẩu của bạn"
+    message = render_to_string("client/forgotpassword_mail/template_forgotpassword.html", {
+        'user': user,
+        'domain': get_current_site(request).domain,
+        'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+        'token': PasswordResetTokenGenerator().make_token(user),
+        'protocol': 'https' if request.is_secure() else 'http'
+    })
+    email = EmailMessage(mail_subject, message, to=[to_email])
+    if email.send():
+        return "gửi mail thành công, hãy kiểm tra email của bạn (lưu ý thư mục spam)"
+    else:
+        return "gửi mail đổi mật khẩu thất bại"
+
+def forgotPassword(request, uidb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        user = UserDAO.getUserByID(uid)
+    except:
+        user = None
+
+    if user is not None:
+        if PasswordResetTokenGenerator().check_token(user,token):
+            # user.is_active = True
+            # user.myuser.email_auth = True
+            # user.save()
+            # messages.success(request, "tài khoản đã được kích hoạt thành công.")
+            serializedUser = UserSerializer(user)
+            serializedUser = serializedUser.data
+
+            request.session['uidb64'] = uidb64
+            request.session['token'] = token
+            request.session['user'] = serializedUser
+            return redirect("shopping:changeforgotpassword")
+
+        else:
+            messages.error(request, "link đổi mật khẩu đã hết hạn hoặc hỏng, chúng tôi sẽ gửi lại mail mới")
+            forgotPasswordEmail(request,user,user.myuser.email)
+            return redirect("shopping:login")
+    else:
+        messages.error(request, "có lỗi khi đổi mật khẩu tài khoản.")
+        return redirect("shopping:login")
+
+class ForgotPasswordPage(View):
+    def get(self, request):
+        if (request.user.is_authenticated and request.user.is_staff == admin):
+            return render(request,'client/indexpage/index.html')
+        return render(request,'client/forgotpasswordpage/forgotpassword.html')
+    
+    def post(self, request):
+        username = request.POST.get('username')
+        user = UserDAO.getUserByUsername(username)
+        
+        if user:
+            if user.is_staff == admin:
+                result = True
+                message = forgotPasswordEmail(request, user, user.myuser.email)
+                return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+            else:
+                result = False
+                message = 'tài khoản tồn tại nhưng không được cấp quyền'
+                return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+        else:
+            result = False
+            message = 'tài khoản không tồn tại'
+            return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+
+class ChangeForgotPasswordPage(View):
+    def get(self, request):
+        if (request.user.is_authenticated and request.user.is_staff == admin):
+            return render(request,'client/indexpage/index.html')
+        try:
+            uidb64 = request.session.pop('uidb64')
+            token = request.session.pop('token')
+            user = request.session.pop('user')
+            request.session.modified = True
+
+            # user = UserSerializer(user)
+            # print(user)
+            context = {'user':user}
+
+            return render(
+                request,'client/changeforgotpasswordpage/changeforgotpassword.html', context)
+        except:
+            return redirect('shopping:login')
+
+    def post(self, request):
+        userid = int(request.POST.get('userpk'))
+        password = str(request.POST.get('password'))
+        
+        user = UserDAO.getUserByID(userid)
+        user.set_password(password)
+
+        try:
+            UserDAO.saveUser(user)
+        except:
+            message = 'đổi mật khẩu thất bại'
+            return JsonResponse({'result':False, 'msg':message}, status=200, safe=False)
+        
+        message = 'đổi mật khẩu thành công'
+        return JsonResponse({'result':True, 'msg':message}, status=200, safe=False)
+
 class RegisterPage(View):
     def get(self, request):
-        if request.user.is_authenticated and request.user.is_staff == admin:
+        if (request.user.is_authenticated and request.user.is_staff == admin):
             return render(request,'client/indexpage/index.html')
-        # form = CreateUserForm()
-        # context = {'form':form}
-
-        logout(request)
         return render(request,'client/registerpage/register.html')
     
     def post(self, request):
@@ -59,46 +209,74 @@ class RegisterPage(View):
         # print(form.is_valid())
         
         result = False
-
-        if password1==password2:
-            try:
-                user = UserDAO.createUser(username=username, password=password1, email=email,tel=tel)
-            except:
-                result = False
-                return JsonResponse({"result":result}, status=200, safe=False)
+        message = None
+        
+        try:
+            user = UserDAO.createUser(username=username, password=password1, email=email,tel=tel)
+        except:
+            result = False
+            message = 'không thể đăng ký, hãy thử lại sau'
+            print(message)
+            return JsonResponse({"result":result, "msg":message}, status=200, safe=False)
 
         if user:
             result=True
-        # if request.is_ajax():
-            # if form.is_valid():
-                # print("valid")
-                # form.save()
-                # result = True
-        
-        return JsonResponse({"result":result}, status=200, safe=False)
+            user.is_active = False
+            UserDAO.saveUser(user)
+            message = activateEmail(request, user, email)
+        else:
+            message = 'username hoặc email đã trùng'
+            
+        print(message)
+
+        return JsonResponse({"result":result, "msg":message}, status=200, safe=False)
 
 #only client
 class LoginPage(View):
     def get(self,request):
-        if request.user.is_authenticated and request.user.is_staff == admin:
-            return render(request,'client/indexpage/index.html')
-        
-        logout(request)
-        return render(request,'client/loginpage/login.html')
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
+        return render(request,'client/indexpage/index.html')
     
     def post(self, request):
-        if request.is_ajax():
-            username = request.POST.get('username')
-            password = request.POST.get('password')
+        username = request.POST.get('username')
+        password = request.POST.get('password')
         
-        user = authenticate(request, username=username, password=password)
-        
-        result = False
-        if user and user.is_staff == admin:
-            login(request, user)
-            result = True
+        try:
+            userdb = UserDAO.findUserByUsername(username)
+        except:
+            userdb = None
 
-        return JsonResponse({"result":result}, status=200, safe=False)
+        #check if acc exists
+        if userdb:
+            #if exists then login
+            user = authenticate(request, username=username, password=password)
+        else:
+            result = False
+            message = 'tài khoản không tồn tại'
+            return JsonResponse({"result":result, 'msg':message}, status=200, safe=False)
+
+        #login result
+        if user:
+            if user.is_staff == admin:
+                login(request, user)
+                result = True
+                message = "đăng nhập thành công"
+            else:
+                result = False
+                message = 'chỉ client mới có thể đăng nhập'
+        else:
+            result = False
+            if userdb.is_active:
+                message = 'username/mật khẩu không đúng'
+            else:
+                if userdb.check_password(password):
+                    message = 'tài khoản chưa được kích hoạt, vui lòng check mail (kiểm tra thư mục spam)'
+
+                else:
+                    message = 'username/mật khẩu không đúng'
+
+        return JsonResponse({"result":result, 'msg':message}, status=200, safe=False)
 
 class LogoutPage(View):
     def get(self,request):
@@ -109,15 +287,15 @@ class LogoutPage(View):
 class IndexPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
-        if request.user.is_staff == admin:
-            return render(request,'client/indexpage/index.html')
-
-        logout(request)
-        return render(request,'client/loginpage/login.html')
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
+        return render(request,'client/indexpage/index.html')
 
 class CatalogPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
         productList = ProductDAO.getActiveProduct()
         categoryList = CategoryDAO.getActiveCategory()
@@ -136,15 +314,20 @@ class CatalogSearch(LoginRequiredMixin, View):
     def post(self, request):
         search_query = request.POST.get("searchQuery")
         categoryId = int(request.POST.get("category"))
-
+        orderField = str(request.POST.get("orderField"))
+        orderType = str(request.POST.get("orderType"))
+        
         if search_query is None:
             search_query = ''
 
         # product_qset = Product.objects.filter(title__icontains = search_query, active=True)
-        productList = ProductDAO.searchAllProductByName(search_query, categoryId = categoryId)
+        productList = ProductDAO.searchAllProductByName(search_query, categoryId = categoryId, orderField=orderField,
+        orderType=orderType)
 
         productList = ProductSerializer(productList, many=True)
         productList = productList.data
+
+        # size = int(product_qset.count())
 
         return JsonResponse(productList, status=200, safe=False)
 
@@ -169,6 +352,8 @@ class CatalogFilter(LoginRequiredMixin, View):
 class ItemDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request, item_id):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         # product = Product.objects.get(pk=product_id)
         item = ProductDAO.getProductByID(item_id)
         if not item.active:
@@ -317,6 +502,8 @@ class AddToCart(LoginRequiredMixin, View):
 class CartPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         user = request.user
 
         cart_qset = CartDAO.getCartByUser(user) #get the ONLY cart
@@ -386,6 +573,8 @@ class CartItemDelete(LoginRequiredMixin, View):
 class CheckoutPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         user = request.user
 
         cart_qset = CartDAO.getCartByUser(user)
@@ -466,14 +655,18 @@ class CheckoutPage(LoginRequiredMixin, View):
 
         return JsonResponse({'result' : 'ok', 'html':html}, status=200, safe= False)
 
-class SuccessPage(LoginRequiredMixin, View):
-    login_url=LOGIN_URL
-    def get(self,request):
-        return render(request, "client/successpage/success.html")
+# class SuccessPage(LoginRequiredMixin, View):
+#     login_url=LOGIN_URL
+#     def get(self,request):
+#         if not authen(request):
+#             return render(request,'client/loginpage/login.html')
+#         return render(request, "client/successpage/success.html")
 
 class OrderPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         user = request.user
 
         orderList = OrderDAO.getAllOrderByUser(user)
@@ -503,6 +696,8 @@ class OrderFilterPage(LoginRequiredMixin, View):
 class OrderDetailPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self, request, order_id):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         order = OrderDAO.getOrderByID(order_id)
         orderItemList = OrderDAO.getAllOrderItemByOrder(order)
 
@@ -586,6 +781,8 @@ class ReviewPage(LoginRequiredMixin, View):
 class MyAccountPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
+        if not authen(request):
+            return render(request,'client/loginpage/login.html')
         # productList = Product.objects.filter(active=True)
 
         user = request.user
@@ -669,6 +866,5 @@ class MyAccountDeactivatePage(LoginRequiredMixin, View):
 class FAQPage(LoginRequiredMixin, View):
     login_url=LOGIN_URL
     def get(self,request):
-
         context = {}
         return render(request,'client/FAQpage/FAQ.html', context)

@@ -29,7 +29,7 @@ var username,email,password1,password2,tel
 $(document).ready(function(){
     var csrfToken = $("input[name=csrfmiddlewaretoken]").val()
 
-    console.log("client register")
+    console.log("client register?")
 
     var form = $('#register')
     form.on('submit', function(e){
@@ -48,7 +48,7 @@ $(document).ready(function(){
         // fd.append('password1', password1)
         // fd.append('password2', password2)
         
-        if(password1 == password2 && (parseInt(tel) || tel == '')){
+        if(password1 === password2 && (parseInt(tel) || tel == '')){
             prepAjaxRequest()
         
             $.ajax({
@@ -66,16 +66,23 @@ $(document).ready(function(){
                 },
                 success: function(response){
                     console.log("result:"+response.result);
+                    console.log("message:"+response.msg);
+
                     if (response.result == true) {
                         // console.log("oke")
-                        alert("đăng ký thành công, bạn sẽ được điều hướng về trang đăng nhập")
+                        alert(response.msg)
+
                         setTimeout(function(){
                             location.replace('/login')
                         }, 1000)
                     }
                     else {
-                        // console.log("not oke")
-                        alert("đăng ký thất bại")
+                        if(response.msg){
+                            alert(response.msg)
+                        }
+                        else{
+                            alert("đăng ký thất bại")
+                        }
                     }
                 },
                 error: function(error){

@@ -1,6 +1,7 @@
-from statistics import variance
-from unicodedata import category
 from product.models import *
+from django.db.models import Avg,Sum,Count
+from django.db.models.functions import Coalesce  
+from itertools import chain
 
 class ProductDAO():
     def createProduct(title, description, category_id, imgPath, unitPrice, quantity, active):
@@ -86,14 +87,54 @@ class ProductDAO():
         productList = Product.objects.filter(title__icontains = search_query, active=True)
         return productList
 
-    def searchAllProductByName(search_query, categoryId):
-        if categoryId == 0:
-            productList = Product.objects.filter(title__icontains = search_query)
-        else:
-            category = Category.objects.get(pk=categoryId)
-            productList = Product.objects.filter(title__icontains = search_query, category = category)
+    def searchAllProductByName(search_query, categoryId, orderField, orderType):
+        if orderField != 'rating':
+            if orderType == 'descending':
+                orderField = '-'+orderField
 
-        return productList
+            if categoryId == 0:
+                productList = Product.objects.filter(title__icontains = search_query).order_by(orderField)
+            else:
+                category = Category.objects.get(pk=categoryId)
+                productList = Product.objects.filter(
+                    title__icontains = search_query, category = category).order_by(orderField)
+            
+            return productList
+        else: ###sort by rating -> harder
+            if categoryId == 0:
+                productList = Product.objects.filter(title__icontains = search_query)
+            else:
+                category = Category.objects.get(pk=categoryId)
+                productList = Product.objects.filter(title__icontains = search_query, category = category)
+            
+            if orderType == 'descending':
+                reviewList = Review.objects.filter(product__in=productList).values('product').annotate(
+                    average=Avg('rating')).order_by('-average')
+            else:                
+                reviewList = Review.objects.filter(product__in=productList).values('product').annotate(
+                    average=Avg('rating')).order_by('average')
+            
+            print(reviewList)
+            
+            result = Product.objects.none()
+
+            # productList = Product.objects.filter(pk__in=reviewList.values('product'))
+            for review in reviewList:
+                # print(review['product'])
+                aProduct = Product.objects.filter(pk=review['product'])
+                # print('aProduct')
+                # print(aProduct)
+                result = chain(result,aProduct)
+            
+            if categoryId == 0:
+                result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                    title__icontains = search_query))
+            else:
+                result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                    title__icontains = search_query, category = category))
+
+            # print(result)
+            return result
 
     def searchActiveProductByCategory(category, maxSize):
         if maxSize == 0:
@@ -164,6 +205,9 @@ class ProductDAO():
 
     def deleteVariance(variance):
         variance.delete()
+
+    def deleteProduct(product):
+        product.delete()
 
     def deleteImgPath(productImage):
         productImage.delete()

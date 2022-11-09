@@ -7,4 +7,5 @@ class MyUser(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique = True)
     tel = models.CharField(default='', max_length=255)
     email = models.CharField(default='', max_length=255, unique = True)
+    email_auth = models.BooleanField(default=False)
     imgPath = models.CharField(default='', max_length=255)

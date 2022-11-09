@@ -56,6 +56,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
 ROOT_URLCONF = 'draft.urls'
 
 TEMPLATES = [
@@ -130,3 +132,15 @@ STATIC_ROOT = 'static'
 #     os.path.join(BASE_DIR, "core/static/"),
 #     os.path.join(BASE_DIR, "admin/static/"),
 # ]
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_FROM = 'truongxuandung.0.5.0.5@gmail.com'
+EMAIL_HOST_USER = 'truongxuandung.0.5.0.5@gmail.com'
+EMAIL_HOST_PASSWORD = 'fyebxbxgqrvrkicq'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+PASSWORD_RESET_TIMEOUT = 14400
+# PASSWORD_RESET_TIMEOUT = 10
+

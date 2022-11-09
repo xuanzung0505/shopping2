@@ -50,12 +50,14 @@ function findNumPages()
 }
 
 function appendData(pk,title,detail,rating,user,create_at){
+    var formattedDate = formatDateTime(create_at)
+
     $("#reviewlist").append('<div class="reviews reviewcustom" id="reviewitem" data-id='+pk+'>'+
         '<div class="review-item">'+
             '<div class="rating">'+
             '</div>'+
             '<h4>'+title+'</h4><span class="text-muted"><a>'+
-            user.username+'</a>, '+create_at+'</span>'+
+            user.username+'</a>, '+formattedDate+'</span>'+
             '<p>'+detail+'</p>'+
         '</div>'+
     '</div>')
