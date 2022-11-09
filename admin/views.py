@@ -986,33 +986,37 @@ class StatisticsPage(LoginRequiredMixin, View):
         clientResult = OrderDAO.getOrderGroupByUser(3)
         print(clientResult)
         
+        clientStat = None
+        client = None
+        clientTotalPrice = None
+
         for item in clientResult:
             clientStat = item
             break
         
-        client = UserDAO.getUserByID(clientStat.get('user'))
-        clientTotalPrice = clientStat.get('total_price')
-        # print(client)
-        # print(clientTotalPrice)
+        if clientStat:
+            client = UserDAO.getUserByID(clientStat.get('user'))
+            clientTotalPrice = clientStat.get('total_price')
+            client = UserSerializer(client)
+            client = client.data
 
         ###stat for products
         productResult = OrderDAO.getOrderGroupByProduct(3)
         print(productResult)
 
+        productStat = None
+        product = None
+        productQuantity = None
+        
         for item in productResult:
             productStat = item
             break
         
-        product = ProductDAO.getProductByID(productStat.get('item__product'))
-        productQuantity = productStat.get('sum')
-
-        ###validate data
-        client = UserSerializer(client)
-        client = client.data
-
-        product = ProductSerializer(product)
-        product = product.data
-        # print(client)
+        if productStat:
+            product = ProductDAO.getProductByID(productStat.get('item__product'))
+            productQuantity = productStat.get('sum')
+            product = ProductSerializer(product)
+            product = product.data
 
         context = {"successfulorderlist":successfulOrderList,
         "totalprice":totalPrice,

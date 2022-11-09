@@ -62,7 +62,14 @@
                                         <div class="col-6 price" style="text-align: left;">
                                             <span>Tài khoản thanh toán nhiều nhất:</span>
                                         </div>
-                                        <div class="col-5 price"><span><a href="/admin/user/{{client.id}}">{{client.username}}</a></span></div>
+                                        {{client|json_script:'client-data'}}
+                                        <div class="col-5 price"><span>
+                                            {%if client%}
+                                                <a href="/admin/user/{{client.id}}">{{client.username}}</a>
+                                            {%else%}
+                                            _chưa có dữ liệu_
+                                            {% endif %}
+                                        </span></div>
                                     </div>
                                 </div>
 
@@ -87,7 +94,14 @@
                                         <div class="col-6 price" style="text-align: left;">
                                             <span>Sản phẩm được mua nhiều nhất:</span>
                                         </div>
-                                        <div class="col-5 price"><span><a href="/admin/product/{{product.id}}">{{product.title}}</a></span></div>
+                                        {{product|json_script:'product-data'}}
+                                        <div class="col-5 price"><span>
+                                            {%if product%}
+                                                <a href="/admin/product/{{product.id}}">{{product.title}}</a>
+                                            {%else%}
+                                            _chưa có dữ liệu_
+                                            {% endif %}
+                                        </span></div>
                                     </div>
                                 </div>
 
@@ -96,6 +110,7 @@
                                         <div class="col-6 price" style="text-align: left;">
                                             <span>Số lượt mua:</span>
                                         </div>
+                                        {{productquantity|json_script:'productquantity-data'}}
                                         <div class="col-5 price"><span id="productQuantity">{{productquantity}}</span></div>
                                     </div>
                                 </div>
