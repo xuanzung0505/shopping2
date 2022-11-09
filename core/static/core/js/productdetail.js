@@ -42,6 +42,25 @@ function prepAjaxRequest(){
     });
 }
 
+function formatDateTime(create_at) {
+    var create_at_tmp = create_at.split("T")
+
+    var date = create_at_tmp[0].split("-")
+    var year = date[0]
+    var month = date[1]
+    var day = date[2]
+
+    var timezone = create_at_tmp[1].split("+")
+    var time = timezone[0].split(":")
+    var zone = timezone[1]
+    var hour = time[0]
+    var minute = time[1]
+    var second = parseInt(time[2])
+
+    var result = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ":" + second
+    return result
+}
+
 function findNumPages()
 {
     if(reviewlist)
