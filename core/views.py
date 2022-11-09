@@ -139,8 +139,14 @@ class ForgotPasswordPage(View):
     
     def post(self, request):
         username = request.POST.get('username')
-        user = UserDAO.getUserByUsername(username)
-        
+        user = None
+        try:
+            user = UserDAO.getUserByUsername(username)
+        except:
+            result = False
+            message = 'tài khoản không tồn tại'
+            return JsonResponse({'result':result,'msg':message}, status=200, safe=False)
+            
         if user:
             if user.is_staff == admin:
                 result = True
