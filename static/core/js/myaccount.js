@@ -1,7 +1,7 @@
 function propUserForm(value){    
     $("#firstname").prop("disabled",value)
     $("#lastname").prop("disabled",value)
-    $("#email").prop("disabled",value)
+    // $("#email").prop("disabled",value)
     $("#tel").prop("disabled",value)
     
 }

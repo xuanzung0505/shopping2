@@ -1,18 +1,15 @@
 $(document).ready(function(){
     var csrfToken = $("input[name='csrfmiddlewaretoken']").val()
-
-    console.log('admin page')
-
-    $('#signin').on('submit', function(e){
+    console.log('client page')
+    
+    $('#changePass').on('submit', function(e){
         e.preventDefault()
         // var csrftoken = Cookies.get('csrftoken');
         
         // console.log("using library:"+csrftoken)
-        console.log(csrfToken)
 
-        username = $('#username').val()
-        password = $('#password').val()
-
+        var username = $('#username').val()
+        
         // console.log(username+','+password)
         $.ajaxSetup({ 
             beforeSend: function(xhr, settings) {
@@ -39,15 +36,13 @@ $(document).ready(function(){
         });
 
         $.ajax({
-            url: '/admin/login/',
+            url: '/admin/forgotpassword/',
             type: 'post',
             dataType: 'json',
             data: {
-                username: username,
-                password: password
+                username: username
             },
             success: function(response){
-
                 if(response.result == true){
                     // console.log("ok")
                     alert(response.msg)

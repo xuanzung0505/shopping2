@@ -13,6 +13,32 @@ function findNumPages() {
     return Math.ceil(pageData.length / records_per_page);
 }
 
+function prepAjaxRequest() {
+    $.ajaxSetup({
+        beforeSend: function (xhr, settings) {
+            function getCookie(name) {
+                var cookieValue = null;
+                if (document.cookie && document.cookie != '') {
+                    var cookies = document.cookie.split(';');
+                    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                            break;
+                        }
+                    }
+                }
+                return cookieValue;
+            }
+            if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                // Only send the token to relative URLs i.e. locally.
+                xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+            }
+        }
+    });
+}
+
 function resetPagination() {
 
     // console.log("data length: "+pageData.length)
@@ -327,13 +353,18 @@ $(document).ready(function () {
         var category = $("#" + checkedID).val()
         var searchQuery = $.trim($("#searchInfo").val())
         // console.log("search query: "+searchQuery)
+        var orderField = $("select[id='orderfield']").find(":selected").val()
+        var orderType = $("input[name='orderType']:checked").val()
+
+        prepAjaxRequest()
 
         $.ajax({
             url: '/catalog/search/',
             data: {
                 category: category,
                 searchQuery:searchQuery,
-                csrfmiddlewaretoken: csrfToken,
+                orderField: orderField,
+                orderType: orderType,
             },
             type: 'post',
             dataType: 'json',
@@ -369,11 +400,9 @@ $(document).ready(function () {
 
         var dataID = $(this).val()
         // console.log(dataID)
+        prepAjaxRequest()
         $.ajax({
             url: '/catalog/filter/' + dataID + '/',
-            data: {
-                csrfmiddlewaretoken: csrfToken
-            },
             type: 'post',
             dataType: 'json',
             success: function (response) {
@@ -391,7 +420,15 @@ $(document).ready(function () {
                 resetData('#item')
                 loadPage(1)
 
+                //make search field blank
                 $("#searchInfo").val("")
+
+                //
+                $("select[id='orderfield']").find(":selected").prop("selected",false)
+                
+                //revert order type
+                $("input[name='orderType']:checked").prop("checked",false)
+                $("#orderAscending").prop("checked",true)
             }
         })
     })
@@ -416,11 +453,9 @@ $(document).ready(function () {
 
         var dataID = $(this).val()
         // console.log(dataID)
+        prepAjaxRequest()
         $.ajax({
             url: '/catalog/filter/' + dataID + '/',
-            data: {
-                csrfmiddlewaretoken: csrfToken
-            },
             type: 'post',
             dataType: 'json',
             success: function (response) {
@@ -438,7 +473,15 @@ $(document).ready(function () {
                 resetData('#item')
                 loadPage(1)
 
+                //make search field blank
                 $("#searchInfo").val("")
+
+                //
+                $("select[id='orderfield']").find(":selected").prop("selected",false)
+                
+                //revert order type
+                $("input[name='orderType']:checked").prop("checked",false)
+                $("#orderAscending").prop("checked",true)
             }
         })
     })

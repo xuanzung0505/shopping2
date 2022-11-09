@@ -368,6 +368,10 @@ $(document).ready(function () {
         // if (searchQuery == '') {
         //     window.location.href = "/admin/product/"
         // }
+        
+        var orderField = $("select[id='orderfield']").find(":selected").val()
+        var orderType = $("input[name='orderType']:checked").val()
+
         prepAjaxRequest()
 
         $.ajax({
@@ -375,7 +379,8 @@ $(document).ready(function () {
             data: {
                 category: category,
                 searchQuery: searchQuery,
-                csrfmiddlewaretoken: csrfToken,
+                orderField: orderField,
+                orderType: orderType,
             },
             type: 'post',
             dataType: 'json',
@@ -419,11 +424,9 @@ $(document).ready(function () {
 
         var dataID = $(this).val()
         // console.log(dataID)
+        prepAjaxRequest()
         $.ajax({
             url: '/admin/product/filter/' + dataID + '/',
-            data: {
-                csrfmiddlewaretoken: csrfToken
-            },
             type: 'post',
             dataType: 'json',
             success: function (response) {
@@ -440,8 +443,16 @@ $(document).ready(function () {
                 // clean(data);
                 resetData('#item')
                 loadPage(1)
-
+                
+                //make search field blank
                 $("#searchInfo").val("")
+
+                //
+                $("select[id='orderfield']").find(":selected").prop("selected",false)
+                
+                //revert order type
+                $("input[name='orderType']:checked").prop("checked",false)
+                $("#orderAscending").prop("checked",true)
             }
         })
     })
@@ -466,11 +477,9 @@ $(document).ready(function () {
 
         var dataID = $(this).val()
         // console.log(dataID)
+        prepAjaxRequest()
         $.ajax({
             url: '/admin/product/filter/' + dataID + '/',
-            data: {
-                csrfmiddlewaretoken: csrfToken
-            },
             type: 'post',
             dataType: 'json',
             success: function (response) {
