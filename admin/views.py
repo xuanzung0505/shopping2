@@ -813,7 +813,7 @@ class MyAccountPage(LoginRequiredMixin, View):
         user = request.user
         firstname = request.POST.get('firstname')
         lastname = request.POST.get('lastname')
-        email = request.POST.get('email')
+        # email = request.POST.get('email')
         tel = request.POST.get('tel')
 
         # print(user.first_name)
@@ -822,19 +822,20 @@ class MyAccountPage(LoginRequiredMixin, View):
         user.first_name = firstname
         user.last_name = lastname
 
-        if email and user.myuser.email != email:
-            #check email
-            if UserDAO.checkEmail(email):
-                #myuser = null
-                # try:
-                #     myuser = user.myuser
-                # except:
-                #     myuser = UserDAO.createMyUser(user=user, email=email, tel=tel)
-                # user.myuser = myuser
+        # if email and user.myuser.email != email:
+        #     #check email
+        #     if UserDAO.checkEmail(email):
+        #         #myuser = null
+        #         # try:
+        #         #     myuser = user.myuser
+        #         # except:
+        #         #     myuser = UserDAO.createMyUser(user=user, email=email, tel=tel)
+        #         # user.myuser = myuser
 
-                user.myuser.email = email
-            else:
-                return JsonResponse({'result':False}, status=200, safe=False)
+        #         user.myuser.email = email
+        #     else:
+        #         return JsonResponse({'result':False}, status=200, safe=False)
+        
         if tel:
             user.myuser.tel = tel
 
