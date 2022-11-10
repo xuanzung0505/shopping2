@@ -626,13 +626,8 @@ class CheckoutPage(LoginRequiredMixin, View):
                 quantity= cartitem.quantity, totalPrice= cartitem.totalPrice)
                 OrderDAO.saveOrderItem(orderItem)
 
-            #delete CartItem and set canReview -> true
+            #delete CartItem
             for cartitem in cartItemList:
-                try:
-                    reviewStatus = ProductDAO.createReviewStatus(user=user, product=cartitem.item.product, canReview=True)
-                    ProductDAO.saveReviewStatus(reviewStatus)
-                except:
-                    pass
                 CartDAO.deleteCartItem(cartitem)
                 # print("cartitem after delete:")
                 # print(cartitem)

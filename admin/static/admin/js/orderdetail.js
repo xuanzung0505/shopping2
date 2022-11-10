@@ -153,9 +153,6 @@ var orderStatus
 $(document).ready(function(){
     console.log("admin order detail")
     init()
-
-    var orderID = $("#orderItemList").data("id")
-    // console.log(orderID)
     var csrfToken = $("input[name=csrfmiddlewaretoken]").val()
 
     editing = false
@@ -237,18 +234,28 @@ $(document).ready(function(){
             $(this).html("<i class='icon-check'></i>Hoàn tất chỉnh sửa")
             
             $(":disabled").each(function(index, item){
-                if($(item).attr("id") != "supportbtn"){                    
-                    // console.log(item)
-                    $(item).prop("disabled", false)
-                    disabledElem.push(item)
+                if (order.status < 2){
+                    if($(item).attr("id") != "supportbtn"){                    
+                        // console.log(item)
+                        $(item).prop("disabled", false)
+                        disabledElem.push(item)
+                    }
+                    
+                    $(".custom-btn").each(function(index, item){
+                        // console.log(item)
+                        $(item).removeClass("disabled")
+                        disabledElem.push(item)
+                    })
+                }
+                else{
+                    if($(item).attr("id") === "status"){                    
+                        // console.log(item)
+                        $(item).prop("disabled", false)
+                        disabledElem.push(item)
+                    }
                 }
             })
 
-            $(".custom-btn").each(function(index, item){
-                // console.log(item)
-                $(item).removeClass("disabled")
-                disabledElem.push(item)
-            })
         }
         else{
                 //check input
@@ -285,7 +292,8 @@ $(document).ready(function(){
                     canChange = true
                 }
 
-                if (canChange){ 
+                if (canChange){
+                    //trang thai >= 2 thi ko duoc sua nua
                     //send ajax and return
                     // console.log("approve edit")
                     prepAjaxRequest()
@@ -327,6 +335,8 @@ $(document).ready(function(){
                                         $(item).prop("disabled", true)
                                     }
                                 }
+
+                                location.replace("/admin/order/"+order.id)
                             }
                         }
                     })

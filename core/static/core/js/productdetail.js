@@ -164,6 +164,7 @@ function resetData(tag){
 function renderData(){
     // console.log("type of data:"+typeof(pageData))
     // console.log(pageData)
+    $("#reviewIsBlank").html('')
     
     for(var i = (current_page-1) * records_per_page; (i <= current_page * records_per_page - 1)
     && i < reviewlist.length; i++){
@@ -324,9 +325,6 @@ function init(){
     if(reviewlist.length > 0){
         resetData('#reviewitem')
         loadPage(1)
-    }
-    else{
-        $("#reviewlist").append('__Hiện tại chưa có đánh giá__')
     }
 
     //change item rating score

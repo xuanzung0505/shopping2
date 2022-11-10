@@ -15,11 +15,6 @@ class Order(models.Model):
     create_at = models.DateTimeField(auto_now=True)
     active = models.BooleanField(default=True)
 
-class RequestSupport(models.Model):
-    order = models.ForeignKey(Order,on_delete=models.CASCADE)
-    detail = models.CharField(default='', max_length=255)
-    finish = models.BooleanField(default=False)
-
 class OrderItem(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE)
     item = models.ForeignKey(Item, on_delete=models.CASCADE)

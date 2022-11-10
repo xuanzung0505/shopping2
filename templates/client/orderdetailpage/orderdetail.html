@@ -199,7 +199,7 @@
                         <div class="items">
                             <br>
                             <a href='#abortOrder' class="btn btn-outline-danger 
-                            btn-lg w-100 {%if order.active is False or order.status == 3%}disabled{%endif%}"> 
+                            btn-lg w-100 {%if order.active is False or order.status >= 2%}disabled{%endif%}"> 
                                 <i class="icon-trash"></i>Hủy đơn
                             </a>
                         </div>

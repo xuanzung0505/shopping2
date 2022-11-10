@@ -276,7 +276,7 @@ class OrderDetailSubmitPage(LoginRequiredMixin, View):
         dienthoai = request.POST.get('dienthoai')
         diachi = request.POST.get('diachi')
         thongtin = request.POST.get('thongtin')
-        trangthai = request.POST.get('trangthai')
+        trangthai = int(request.POST.get('trangthai'))
         totalPrice = request.POST.get('totalPrice')
 
         deletedItem = request.POST.get('deletedOrderItem')
@@ -313,7 +313,19 @@ class OrderDetailSubmitPage(LoginRequiredMixin, View):
                 orderItem = OrderDAO.getAnOrderItemByID(item['id'])
                 orderItem.quantity = item['quantity']
                 OrderDAO.saveOrderItem(orderItem)
+            
+            #if order status = 3
 
+            if trangthai == 3:
+                orderItemList = OrderDAO.getAllOrderItemByOrder(order)
+                for orderitem in orderItemList:
+                    try:
+                        reviewStatus = ProductDAO.createReviewStatus(
+                            user=order.user, product=orderitem.item.product, canReview=True)
+                        ProductDAO.saveReviewStatus(reviewStatus)
+                    except:
+                        pass
+                
         except: #how to handle these?
             return JsonResponse({'result' : False}, status=200)
 
