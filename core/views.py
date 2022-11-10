@@ -368,6 +368,7 @@ class ItemDetailPage(LoginRequiredMixin, View):
         imgPathList = ProductDAO.getImgPathByProduct(item)
 
         relatedProductList = ProductDAO.searchRelatedProductByCategory(product=item, category=item.category, maxSize=2)
+        print(relatedProductList)
         # print(item)
         # print(imgPathList)
         # print(relatedProductList)
@@ -410,7 +411,6 @@ class ItemDetailPage(LoginRequiredMixin, View):
 
         reviewList = ReviewSerializer(reviewList, many=True)
         reviewList = reviewList.data
-        # print(reviewList)
 
         item = ProductSerializer(item)
         item = item.data

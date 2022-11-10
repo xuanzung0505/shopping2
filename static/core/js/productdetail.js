@@ -260,7 +260,7 @@ function renderRating(){
 }
 
 function renderRelatedProduct(){
-    console.log("related product")
+    console.log(relatedproductlist.length)
     for (var i = 0; i < relatedproductlist.length; i ++){
         // console.log(relatedproductlist[i])
         var relatedProduct = relatedproductlist[i]
@@ -285,13 +285,13 @@ function renderRelatedProduct(){
             relatedProductRating = Math.floor(relatedProduct.totalStar / relatedProduct.totalReview)
         else relatedProductRating = 0;
 
-        for(var i = 1; i <= relatedProductRating; i ++)
+        for(var j = 1; j <= relatedProductRating; j ++)
             
             $(".related-name[data-id='"+relatedProduct.id+"']").children(".rating").append(
                 '<img src="/static/core/assets/img/star.svg">'
             )
 
-        for(var i = 1; i <= 5-relatedProductRating; i ++)
+        for(var j = 1; j <= 5-relatedProductRating; j ++)
             $(".related-name[data-id='"+relatedProduct.id+"']").children(".rating").append(
                 '<img src="/static/core/assets/img/star-empty.svg">'
             )

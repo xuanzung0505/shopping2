@@ -2,6 +2,7 @@ from product.models import *
 from django.db.models import Avg,Sum,Count
 from django.db.models.functions import Coalesce  
 from itertools import chain
+import random
 
 class ProductDAO():
     def createProduct(title, description, category_id, imgPath, unitPrice, quantity, active):
@@ -167,9 +168,9 @@ class ProductDAO():
         productList = Product.objects.filter(category = category, active=True)
 
         if maxSize == 0:
-            productList = productList.exclude(id__in=object_id_list)
+            productList = random.choice(list(productList.exclude(id__in=object_id_list)))
         else:
-            productList = productList.exclude(id__in=object_id_list)[:maxSize]
+            productList = random.sample(list(productList.exclude(id__in=object_id_list)), maxSize)
 
         return productList
 
