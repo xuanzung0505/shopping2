@@ -52,7 +52,7 @@ def authen(request):
 
 def activateEmail(request,user,to_email):
     mail_subject = "kích hoạt tài khoản của bạn"
-    message = render_to_string("client/activatepage/template_activate_account.html", {
+    message = render_to_string("client/activate_mail/template_activate_account.html", {
         'user': user,
         'domain': get_current_site(request).domain,
         'uid': urlsafe_base64_encode(force_bytes(user.pk)),
