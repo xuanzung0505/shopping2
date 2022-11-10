@@ -184,11 +184,26 @@
                                 <hr>
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="mb-3"><label class="form-label"
-                                                for="description">Trạng thái (0 - đang xử lý, 1 - đã xác nhận, 2 - đang giao hàng, 3 - giao hàng thành công)
-                                            </label><input type="text"
+                                        <div class="mb-3"><label class="form-label" for="description">
+                                            Trạng thái
+                                            </label>
+                                            {%if order.status == 0%}
+                                            <input type="text"
                                                 class="form-control" name="description"
-                                                value="{{order.status}}" disabled />
+                                                value="_đang xử lý_" disabled />
+                                            {%elif order.status == 1%}
+                                            <input type="text"
+                                            class="form-control" name="description"
+                                            value="_đã xác nhận_" disabled />
+                                            {%elif order.status == 2%}
+                                            <input type="text"
+                                            class="form-control" name="description"
+                                            value="_đang giao hàng_" disabled />
+                                            {%elif order.status == 3%}
+                                            <input type="text"
+                                            class="form-control" name="description"
+                                            value="_giao hàng thành công_" disabled />
+                                            {%endif%}
                                         </div>
                                     </div>
                                 </div>
