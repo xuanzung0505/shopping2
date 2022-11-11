@@ -616,10 +616,11 @@ $(document).ready(function(){
                         loadPage(1)
                         
                         alert("Đánh giá thành công")
-
+                        
                         item = response.product
                         resetRating()
                         renderRating()
+                        location.reload()
                     }
                     else{
                         console.log("NOT OK")

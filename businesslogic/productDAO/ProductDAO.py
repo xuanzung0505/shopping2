@@ -168,10 +168,12 @@ class ProductDAO():
         productList = Product.objects.filter(category = category, active=True)
 
         if maxSize == 0:
-            productList = random.choice(list(productList.exclude(id__in=object_id_list)))
+            productList = random.sample(list(productList.exclude(id__in=object_id_list)), 1)
         else:
-            productList = random.sample(list(productList.exclude(id__in=object_id_list)), maxSize)
-
+            if productList.count() > maxSize:
+                productList = random.sample(list(productList.exclude(id__in=object_id_list)), maxSize)
+            else:
+                productList = random.sample(list(productList.exclude(id__in=object_id_list)),1)
         return productList
 
     def getAttributeListByProduct(product):

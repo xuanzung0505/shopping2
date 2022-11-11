@@ -414,8 +414,12 @@ class ItemDetailPage(LoginRequiredMixin, View):
 
         item = ProductSerializer(item)
         item = item.data
-
+        
+        # if len(relatedProductList) > 1:
+        #     relatedProductList = ProductSerializer(relatedProductList, many=True)
+        # else:
         relatedProductList = ProductSerializer(relatedProductList, many=True)
+
         relatedProductList = relatedProductList.data
 
         context = {"item":item, "imgpathlist":imgPathList, "relatedproductlist": relatedProductList, "attrlist":attrListTmp,
