@@ -328,7 +328,7 @@ class CatalogSearch(LoginRequiredMixin, View):
 
         # product_qset = Product.objects.filter(title__icontains = search_query, active=True)
         productList = ProductDAO.searchAllProductByName(search_query, categoryId = categoryId, orderField=orderField,
-        orderType=orderType)
+        orderType=orderType, active = True)
 
         productList = ProductSerializer(productList, many=True)
         productList = productList.data

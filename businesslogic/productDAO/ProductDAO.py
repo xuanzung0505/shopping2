@@ -25,6 +25,9 @@ class ProductDAO():
         review = ReviewStatus.objects.create(user=user, product=product, canReview=canReview)
         return review
 
+    def saveReviewStatus(reviewStatus):
+        reviewStatus.save()
+        
     def createAttrValueByAttr(attribute, title):
         attrValue = AttributeValue.objects.create(productAttribute = attribute, title = title)
         return attrValue
@@ -37,9 +40,6 @@ class ProductDAO():
     def createImgPath(imgPath, product):
         imgPath = ProductImage.objects.create(imgPath = imgPath, product = product)
         return imgPath
-
-    def saveReviewStatus(reviewStatus):
-        reviewStatus.save()
 
     def saveProduct(product):
         product.save()
@@ -88,25 +88,41 @@ class ProductDAO():
         productList = Product.objects.filter(title__icontains = search_query, active=True)
         return productList
 
-    def searchAllProductByName(search_query, categoryId, orderField, orderType):
+    def searchAllProductByName(search_query, categoryId, orderField, orderType, active):
+        print(active)
+
         if orderField != 'rating':
             if orderType == 'descending':
                 orderField = '-'+orderField
-
+            
             if categoryId == 0:
-                productList = Product.objects.filter(title__icontains = search_query).order_by(orderField)
+                if active==True:
+                    productList = Product.objects.filter(title__icontains = search_query, active = active).order_by(orderField)
+                else:
+                    productList = Product.objects.filter(title__icontains = search_query).order_by(orderField)
             else:
                 category = Category.objects.get(pk=categoryId)
-                productList = Product.objects.filter(
-                    title__icontains = search_query, category = category).order_by(orderField)
-            
+                if active==True:
+                    productList = Product.objects.filter(
+                        title__icontains = search_query, category = category, active = active).order_by(orderField)
+                else:
+                    productList = Product.objects.filter(
+                        title__icontains = search_query, category = category).order_by(orderField)
             return productList
         else: ###sort by rating -> harder
             if categoryId == 0:
-                productList = Product.objects.filter(title__icontains = search_query)
+                if active==True:
+                    productList = Product.objects.filter(title__icontains = search_query, active = active)
+                else:
+                    productList = Product.objects.filter(title__icontains = search_query)
             else:
                 category = Category.objects.get(pk=categoryId)
-                productList = Product.objects.filter(title__icontains = search_query, category = category)
+                if active==True:
+                    productList = Product.objects.filter(
+                        title__icontains = search_query, category = category, active = active)
+                else:
+                    productList = Product.objects.filter(
+                        title__icontains = search_query, category = category)
             
             if orderType == 'descending':
                 reviewList = Review.objects.filter(product__in=productList).values('product').annotate(
@@ -128,11 +144,19 @@ class ProductDAO():
                 result = chain(result,aProduct)
             
             if categoryId == 0:
-                result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
-                    title__icontains = search_query))
+                if active == True:
+                    result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                        title__icontains = search_query, active = active))
+                else:
+                    result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                        title__icontains = search_query))
             else:
-                result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
-                    title__icontains = search_query, category = category))
+                if active == True:
+                    result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                        title__icontains = search_query, category = category, active = active))
+                else:
+                    result = chain(result,Product.objects.exclude(pk__in=reviewList.values('product')).filter(
+                        title__icontains = search_query, category = category))
 
             # print(result)
             return result
