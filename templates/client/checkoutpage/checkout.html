@@ -7,6 +7,12 @@
 <link rel="stylesheet" href="{%static 'core/assets/fonts/simple-line-icons.min.css'%}">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/baguettebox.js/1.10.0/baguetteBox.min.css">
 <link rel="stylesheet" href="{%static 'core/assets/css/vanilla-zoom.min.css'%}">
+<style>
+    .required-field::after {
+        content: "*";
+        color: red;
+    }
+</style>
 {%endblock%}
 
 {%block content%}
@@ -71,19 +77,19 @@
                                 <h3 class="title">COD</h3>
                                 <div class="row">
                                     <div class="col-sm-12">
-                                        <div class="mb-3"><label class="form-label" for="card_holder">Họ tên</label><input type="text" class="form-control"
+                                        <div class="mb-3"><label class="form-label required-field" for="card_holder">Họ tên</label><input type="text" class="form-control"
                                                 id="hoten" placeholder="Họ tên" name="card_holder" 
                                                 value="{{request.user.first_name}} {{request.user.last_name}}" required />
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="mb-3"><label class="form-label" for="card_number">Điện thoại liên hệ</label><input type="text" class="form-control"
+                                        <div class="mb-3"><label class="form-label required-field" for="card_number">Điện thoại liên hệ</label><input type="text" class="form-control"
                                                 id="dienthoai" placeholder="Điện thoại liên hệ" 
                                                 value="{{request.user.myuser.tel}}" name="card_number" required/>
                                         </div>
                                     </div>
                                     <div class="col-sm-12">
-                                        <div class="mb-3"><label class="form-label"
+                                        <div class="mb-3"><label class="form-label required-field"
                                                 for="address">Địa chỉ</label><input type="text"
                                                 class="form-control" id="diachi" placeholder="Địa chỉ"
                                                 name="address" required/></div>
